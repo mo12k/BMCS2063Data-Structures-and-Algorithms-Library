@@ -4,6 +4,8 @@
  */
 package boundary;
 
+import adt.ArrayList;
+import adt.ListInterface;
 import entity.Book;
 import java.util.Scanner;
 
@@ -12,7 +14,8 @@ import java.util.Scanner;
  *
  * @author Mok
  */
-public class LibraryMaintenanceUI {
+public class BookMaintenanceUI {
+    private ListInterface<Book> bookList = new ArrayList<>();
     Scanner scan = new Scanner(System.in);
     
     public int getMainMenuChoice(){
@@ -69,32 +72,37 @@ public class LibraryMaintenanceUI {
         System.out.println("Author        : " + book.getAuthor());
         System.out.println("Category      : " + book.getCategory());
         System.out.println("Year Published: " + book.getYearPublished());
+        System.out.println("Quantity      : " + book.getQuantity());
         System.out.println("Available     : " + (book.isIsAvailable() ? "Yes" : "No"));
     }
     
     public String inputBookName(){
-        System.out.print("Enter book title keyword: ");
-        return scan.nextLine();
+        System.out.print("Enter book name: ");
+        String bookName = scan.nextLine();
+        return bookName;
     }
-
+    
     public String inputBookId() {
         System.out.print("Enter Book ID: ");
         return scan.nextLine();
-    }
+}
 
     public String inputBookTitle() {
         System.out.print("Enter title: ");
-        return scan.nextLine();
+        String bookTitle = scan.nextLine();
+        return bookTitle;
     }
 
     public String inputBookAuthor() {
         System.out.print("Enter author: ");
-        return scan.nextLine();
+        String authorName = scan.nextLine();
+        return authorName;
     }
 
     public String inputBookCategory() {
         System.out.print("Enter category: ");
-        return scan.nextLine();
+        String bookCategory = scan.nextLine();
+        return bookCategory;
     }
 
     public int inputYearPublished() {
@@ -123,6 +131,23 @@ public class LibraryMaintenanceUI {
         }
     }
 
+    public int inputQuantity() {
+        while (true) {
+            System.out.print("Enter quantity: ");
+            String line = scan.nextLine();
+            try {
+                int qty = Integer.parseInt(line.trim());
+                if (qty < 0) {
+                    System.out.println("Quantity cannot be negative.");
+                    continue;
+                }
+                return qty;
+            } catch (NumberFormatException ex) {
+                System.out.println("Invalid quantity. Please enter a number.");
+            }
+        }
+    }
+
     public boolean confirm(String prompt) {
         while (true) {
             System.out.print(prompt + " (Y/N): ");
@@ -136,4 +161,17 @@ public class LibraryMaintenanceUI {
             System.out.println("Invalid input. Enter Y or N.");
         }
     }
+    
+
+    public Book inputBookDetails(){
+        String title = inputBookTitle();
+        String author = inputBookAuthor();
+        String category = inputBookCategory();
+        int yearPublish = inputYearPublished();
+        int quantity = inputQuantity();
+        System.out.println("");
+        return new Book(title, author, category, yearPublish, quantity);
+    }
+    
+
 }

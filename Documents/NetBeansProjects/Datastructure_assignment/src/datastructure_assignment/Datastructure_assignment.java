@@ -4,7 +4,7 @@
  */
 package datastructure_assignment;
 
-import boundary.LibraryMaintenanceUI;
+import boundary.BookMaintenanceUI;
 import control.BookMaintenance;
 import entity.Book;
 import utility.MessageUI;
@@ -19,7 +19,7 @@ public class Datastructure_assignment {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        LibraryMaintenanceUI ui = new LibraryMaintenanceUI();
+        BookMaintenanceUI ui = new BookMaintenanceUI();
         BookMaintenance bookMaintenance = new BookMaintenance();
 
         int mainChoice;
@@ -42,7 +42,7 @@ public class Datastructure_assignment {
         } while (mainChoice != 0);
     }
 
-    private static void runStaffMenu(LibraryMaintenanceUI ui, BookMaintenance bookMaintenance) {
+    private static void runStaffMenu(BookMaintenanceUI ui, BookMaintenance bookMaintenance) {
         int choice;
         do {
             choice = ui.getStaffMenu();
@@ -52,9 +52,9 @@ public class Datastructure_assignment {
                     String author = ui.inputBookAuthor();
                     String category = ui.inputBookCategory();
                     int year = ui.inputYearPublished();
-                    boolean available = ui.inputAvailability();
+                    int quantity = ui.inputQuantity();
 
-                    Book added = bookMaintenance.addNewBook(title, author, category, year, available);
+                    Book added = bookMaintenance.addNewBook(title, author, category, year, quantity);
                     System.out.println("Book added successfully. (Auto-generated Book ID: " + added.getBookID() + ")");
                     ui.printBookDetails(added);
                     break;
@@ -72,9 +72,9 @@ public class Datastructure_assignment {
                     String author = ui.inputBookAuthor();
                     String category = ui.inputBookCategory();
                     int year = ui.inputYearPublished();
-                    boolean available = ui.inputAvailability();
+                    int quantity = ui.inputQuantity();
 
-                    boolean ok = bookMaintenance.updateBook(existing.getBookID(), title, author, category, year, available);
+                    boolean ok = bookMaintenance.updateBook(existing.getBookID(), title, author, category, year, quantity);
                     System.out.println(ok ? "Book updated successfully." : "Update failed.");
                     break;
                 }
@@ -111,7 +111,7 @@ public class Datastructure_assignment {
         } while (choice != 0);
     }
 
-    private static void runStudentMenu(LibraryMaintenanceUI ui, BookMaintenance bookMaintenance) {
+    private static void runStudentMenu(BookMaintenanceUI ui, BookMaintenance bookMaintenance) {
         int choice;
         do {
             choice = ui.getStudentMenu();
