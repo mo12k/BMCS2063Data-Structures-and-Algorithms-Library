@@ -35,6 +35,7 @@ public class LibraryMaintenanceUI {
         System.out.println("4.Search book");
         System.out.println("5.Display all books");
         System.out.println("0.Quit");
+        System.out.print("Enter choice: ");
         int choice = scan.nextInt();
         scan.nextLine();
         System.out.println("");
@@ -44,7 +45,9 @@ public class LibraryMaintenanceUI {
     public int getStudentMenu(){
         System.out.println("Student Menu");
         System.out.println("1.Search book");
-        System.out.println("2.Display al book");
+        System.out.println("2.Display all books");
+        System.out.println("0.Quit");
+        System.out.print("Enter choice: ");
         int choice = scan.nextInt();
         scan.nextLine();
         System.out.println("");
@@ -56,16 +59,81 @@ public class LibraryMaintenanceUI {
     }
     
     public void printBookDetails(Book book){
+        if (book == null) {
+            System.out.println("Book not found.");
+            return;
+        }
         System.out.println("Book Details");
-        System.out.println("Book ID: " + book.getBookID());
-        
+        System.out.println("Book ID       : " + book.getBookID());
+        System.out.println("Title         : " + book.getTitle());
+        System.out.println("Author        : " + book.getAuthor());
+        System.out.println("Category      : " + book.getCategory());
+        System.out.println("Year Published: " + book.getYearPublished());
+        System.out.println("Available     : " + (book.isIsAvailable() ? "Yes" : "No"));
     }
     
     public String inputBookName(){
-        System.out.print("Enter book name: ");
-        String bookName = scan.nextLine();
-        return bookName;
+        System.out.print("Enter book title keyword: ");
+        return scan.nextLine();
     }
-    
-    public 
+
+    public String inputBookId() {
+        System.out.print("Enter Book ID: ");
+        return scan.nextLine();
+    }
+
+    public String inputBookTitle() {
+        System.out.print("Enter title: ");
+        return scan.nextLine();
+    }
+
+    public String inputBookAuthor() {
+        System.out.print("Enter author: ");
+        return scan.nextLine();
+    }
+
+    public String inputBookCategory() {
+        System.out.print("Enter category: ");
+        return scan.nextLine();
+    }
+
+    public int inputYearPublished() {
+        while (true) {
+            System.out.print("Enter year published: ");
+            String line = scan.nextLine();
+            try {
+                return Integer.parseInt(line.trim());
+            } catch (NumberFormatException ex) {
+                System.out.println("Invalid year. Please enter a number.");
+            }
+        }
+    }
+
+    public boolean inputAvailability() {
+        while (true) {
+            System.out.print("Is available? (Y/N): ");
+            String input = scan.nextLine().trim();
+            if (input.equalsIgnoreCase("Y")) {
+                return true;
+            }
+            if (input.equalsIgnoreCase("N")) {
+                return false;
+            }
+            System.out.println("Invalid input. Enter Y or N.");
+        }
+    }
+
+    public boolean confirm(String prompt) {
+        while (true) {
+            System.out.print(prompt + " (Y/N): ");
+            String input = scan.nextLine().trim();
+            if (input.equalsIgnoreCase("Y")) {
+                return true;
+            }
+            if (input.equalsIgnoreCase("N")) {
+                return false;
+            }
+            System.out.println("Invalid input. Enter Y or N.");
+        }
+    }
 }
