@@ -44,6 +44,39 @@ public class BookMaintenance {
         Book.setNextBookNumber(max + 1);
     }
 
+    private String normalizeBookId(String input) {
+        if (input == null) {
+            return null;
+        }
+        String trimmed = input.trim().toUpperCase();
+        if (trimmed.isEmpty()) {
+            return null;
+        }
+
+        // Accept digits-only input like "1" or "0001" and convert to "B0001".
+        if (trimmed.matches("\\d+")) {
+            try {
+                int value = Integer.parseInt(trimmed);
+                return String.format("B%04d", value);
+            } catch (NumberFormatException ex) {
+                return trimmed;
+            }
+        }
+
+        // If user types something like "b1" or "B0001" keep it, but pad if possible.
+        if (trimmed.matches("B\\d+")) {
+            String digits = trimmed.substring(1);
+            try {
+                int value = Integer.parseInt(digits);
+                return String.format("B%04d", value);
+            } catch (NumberFormatException ex) {
+                return trimmed;
+            }
+        }
+
+        return trimmed;
+    }
+
     private void persist() {
         bookDAO.saveToFile(bookList);
     }
@@ -64,12 +97,11 @@ public class BookMaintenance {
     }
 
     public Book searchBookById(String bookId) {
-        if (bookId == null) {
-            return null;
-        }
+        String normalized = normalizeBookId(bookId);
+        if (normalized == null) return null;
         for (int i = 1; i <= bookList.getNumberOfEntries(); i++) {
             Book book = bookList.getEntry(i);
-            if (book != null && bookId.equalsIgnoreCase(book.getBookID())) {
+            if (book != null && normalized.equalsIgnoreCase(book.getBookID())) {
                 return book;
             }
         }
@@ -163,12 +195,11 @@ public class BookMaintenance {
     }
 
     private int findPositionById(String bookId) {
-        if (bookId == null) {
-            return -1;
-        }
+        String normalized = normalizeBookId(bookId);
+        if (normalized == null) return -1;
         for (int i = 1; i <= bookList.getNumberOfEntries(); i++) {
             Book book = bookList.getEntry(i);
-            if (book != null && bookId.equalsIgnoreCase(book.getBookID())) {
+            if (book != null && normalized.equalsIgnoreCase(book.getBookID())) {
                 return i;
             }
         }

@@ -104,7 +104,7 @@ public class Book implements Serializable {
     }
     
     private String generateBookID(){
-        String id = String.format("%03d", BookCount++);
+        String id = String.format("B%04d", BookCount++);
         return id;
 }
 
