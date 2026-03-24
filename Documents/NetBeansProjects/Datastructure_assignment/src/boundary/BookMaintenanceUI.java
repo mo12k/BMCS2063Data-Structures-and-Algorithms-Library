@@ -56,7 +56,7 @@ public class BookMaintenanceUI {
     }
     
     public void listAllBooks (String outputStr){
-        System.out.println("\nList of Books : \n "+ outputStr);
+        System.out.println("\nList of Books : \n" + outputStr);
     }
     
     public void printBookDetails(Book book){
@@ -73,10 +73,9 @@ public class BookMaintenanceUI {
         System.out.println("Quantity      : " + book.getQuantity());
         System.out.println("Available     : " + (book.isIsAvailable() ? "Yes" : "No"));
     }
-    
-    public String bookID(){
-        System.out.println("Book ID :" + Book.setNextBookNumber(0));
-        return 
+
+    public String getSearchInput() {
+        return scan.nextLine();
     }
     
     public String inputBookName(){

@@ -23,6 +23,9 @@ public class BookMaintenance {
         bookList = bookDAO.retriveFromFile();
     }
     
+    /**
+     * 
+     */
     public void startRunLibrary(){
         int mainChoice = 0;
         do{
@@ -32,52 +35,89 @@ public class BookMaintenance {
                     MessageUI.displayExitMessage();
                     break;
                 } 
-                case 1:
+                case 1 -> {
                     runStaffMenu();
                     break;
-                case 2:
+                }
+                case 2 -> {
                     runStudentMenu();
                     break;
-                default:
+                }
+                default-> {
                     MessageUI.displayInvalidChoiceMessage();
                     break;
+                }
             }
         }while(mainChoice !=0);
     }
     
     public void runStaffMenu(){
-        int choice =0;
-        do{
+        int choice = 0;
+        do {
             choice = bookUI.getStaffMenu();
-            switch(choice){
-                case 1:
+            switch (choice) {
+                case 0 -> MessageUI.displayExitMessage();
+                case 1 -> {
                     addNewBook();
-                    bookUI.listAllBooks(getAllProducts());
-                    break;
-                case 2:
-                    System.out.println("Enter Book (ID/Title/Author) to search:");
+                    displayBooks();
+                }
+                case 2 -> updateBookDetails();
+                case 3 -> removeBook();
+                case 4 -> {
+                    System.out.print("Enter Book (ID/Title/Author) to search: ");
                     String searchName = bookUI.getSearchInput();
-                    searchBook(searchName);
-                    
+                    ListInterface<Book> results = searchBook(searchName);
+                    if (results.isEmpty()) {
+                        System.out.println("No matching books found.");
+                    } else {
+                        bookUI.listAllBooks(formatBookList(results));
+                    }
+                }
+                case 5 -> displayBooks();
+                default -> MessageUI.displayInvalidChoiceMessage();
             }
-        }
+        } while (choice != 0);
     }
+
     public void runStudentMenu(){
         int choice = 0;
-        do{
-            choice = bookUI
-        }
+        do {
+            choice = bookUI.getStudentMenu();
+            switch (choice) {
+                case 0 -> MessageUI.displayExitMessage();
+                case 1 -> {
+                    System.out.print("Enter Book (ID/Title/Author) to search: ");
+                    String searchName = bookUI.getSearchInput();
+                    ListInterface<Book> results = searchBook(searchName);
+                    if (results.isEmpty()) {
+                        System.out.println("No matching books found.");
+                    } else {
+                        bookUI.listAllBooks(formatBookList(results));
+                    }
+                }
+                case 2 -> displayBooks();
+                default -> MessageUI.displayInvalidChoiceMessage();
+            }
+        } while (choice != 0);
     }
     
-    public ArrayList<Book> searchBook (String searchName){
-        ArrayList<Book> matchingBooks = new ArrayList<>();
-        String searchLower = searchName.toLowerCase().trim();
-        
-        for(Book books : bookList){
-            if(books.getAuthor().toLowerCase().contains(searchLower) || books.getBookID().toLowerCase().contains(searchLower) && books.getTitle().toLowerCase().contains(searchLower)){
-                matchingBooks.add(books);
+    public ListInterface<Book> searchBook(String searchName){
+        ListInterface<Book> matchingBooks = new ArrayList<>();
+        String searchLower = (searchName == null) ? "" : searchName.toLowerCase().trim();
+
+        for (int i = 1; i <= bookList.getNumberOfEntries(); i++) {
+            Book book = bookList.getEntry(i);
+            if (book == null) {
+                continue;
+            }
+            boolean matchesId = book.getBookID() != null && book.getBookID().toLowerCase().contains(searchLower);
+            boolean matchesTitle = book.getTitle() != null && book.getTitle().toLowerCase().contains(searchLower);
+            boolean matchesAuthor = book.getAuthor() != null && book.getAuthor().toLowerCase().contains(searchLower);
+            if (matchesId || matchesTitle || matchesAuthor) {
+                matchingBooks.add(book);
             }
         }
+
         return matchingBooks;
     }
     
@@ -86,13 +126,92 @@ public class BookMaintenance {
         bookList.add(newBook);
         bookDAO.saveToFile(bookList);
     }
+
+    private void updateBookDetails() {
+        String bookId = bookUI.inputBookId();
+        int position = findBookPositionById(bookId);
+        if (position == -1) {
+            System.out.println("Book not found.");
+            return;
+        }
+
+        Book book = bookList.getEntry(position);
+        bookUI.printBookDetails(book);
+        if (!bookUI.confirm("Update this book?") ) {
+            return;
+        }
+
+        String title = bookUI.inputBookTitle();
+        String author = bookUI.inputBookAuthor();
+        String category = bookUI.inputBookCategory();
+        int yearPublished = bookUI.inputYearPublished();
+        int quantity = bookUI.inputQuantity();
+        boolean available = bookUI.inputAvailability();
+
+        book.setTitle(title);
+        book.setAuthor(author);
+        book.setCategory(category);
+        book.setYearPublished(yearPublished);
+        book.setQuantity(quantity);
+        book.setIsAvailable(available);
+
+        bookList.replace(position, book);
+        bookDAO.saveToFile(bookList);
+        System.out.println("Book updated.");
+    }
+
+    private void removeBook() {
+        String bookId = bookUI.inputBookId();
+        int position = findBookPositionById(bookId);
+        if (position == -1) {
+            System.out.println("Book not found.");
+            return;
+        }
+
+        Book book = bookList.getEntry(position);
+        bookUI.printBookDetails(book);
+        if (!bookUI.confirm("Remove this book?") ) {
+            return;
+        }
+
+        bookList.remove(position);
+        bookDAO.saveToFile(bookList);
+        System.out.println("Book removed.");
+    }
+
+    private int findBookPositionById(String bookId) {
+        if (bookId == null) {
+            return -1;
+        }
+        String needle = bookId.trim();
+        if (needle.isEmpty()) {
+            return -1;
+        }
+        for (int i = 1; i <= bookList.getNumberOfEntries(); i++) {
+            Book book = bookList.getEntry(i);
+            if (book != null && book.getBookID() != null && book.getBookID().equalsIgnoreCase(needle)) {
+                return i;
+            }
+        }
+        return -1;
+    }
     
     public String getAllProducts(){
-        String outputStr ="";
-        for(int i = 0; i<=bookList.getNumberOfEntries();i++){
-            outputStr += bookList.getEntry(i)+ "\n";
+        return formatBookList(bookList);
+    }
+
+    private String formatBookList(ListInterface<Book> list) {
+        if (list == null || list.isEmpty()) {
+            return "(no books)";
         }
-        return outputStr;
+        StringBuilder outputStr = new StringBuilder();
+        for (int i = 1; i <= list.getNumberOfEntries(); i++) {
+            Book book = list.getEntry(i);
+            if (book != null) {
+                outputStr.append(book).append("\n");
+            }
+        }
+        return outputStr.toString();
     }
     
     public void displayBooks(){
