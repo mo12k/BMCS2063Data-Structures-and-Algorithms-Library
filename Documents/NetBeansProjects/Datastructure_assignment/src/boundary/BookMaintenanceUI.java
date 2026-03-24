@@ -4,8 +4,7 @@
  */
 package boundary;
 
-import adt.ArrayList;
-import adt.ListInterface;
+
 import entity.Book;
 import java.util.Scanner;
 
@@ -15,7 +14,6 @@ import java.util.Scanner;
  * @author Mok
  */
 public class BookMaintenanceUI {
-    private ListInterface<Book> bookList = new ArrayList<>();
     Scanner scan = new Scanner(System.in);
     
     public int getMainMenuChoice(){
@@ -76,6 +74,11 @@ public class BookMaintenanceUI {
         System.out.println("Available     : " + (book.isIsAvailable() ? "Yes" : "No"));
     }
     
+    public String bookID(){
+        System.out.println("Book ID :" + Book.setNextBookNumber(0));
+        return 
+    }
+    
     public String inputBookName(){
         System.out.print("Enter book name: ");
         String bookName = scan.nextLine();
@@ -130,6 +133,8 @@ public class BookMaintenanceUI {
             System.out.println("Invalid input. Enter Y or N.");
         }
     }
+    
+
 
     public int inputQuantity() {
         while (true) {
@@ -162,6 +167,7 @@ public class BookMaintenanceUI {
         }
     }
     
+
 
     public Book inputBookDetails(){
         String title = inputBookTitle();
