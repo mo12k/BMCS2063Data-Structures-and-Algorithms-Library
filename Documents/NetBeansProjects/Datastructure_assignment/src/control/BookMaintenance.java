@@ -96,7 +96,11 @@ public class BookMaintenance {
                     if (results.isEmpty()) {
                         System.out.println("No matching books found.");
                     } else {
-                        bookUI.listAllBooks(formatBookList(results));
+                        String outputStr = "";
+                        for (int i = 1; i <= results.getNumberOfEntries(); i++) {
+                            outputStr += results.getEntry(i) + "\n";
+                        }
+                        bookUI.listAllBooks(outputStr);
                     }
                 }
                 case 2 -> displayBooks();
