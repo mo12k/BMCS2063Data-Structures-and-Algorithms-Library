@@ -15,17 +15,27 @@ import java.util.Scanner;
  */
 public class BookMaintenanceUI {
     Scanner scan = new Scanner(System.in);
+
+    private int readMenuChoice(String menuTitle) {
+        while (true) {
+            System.out.print("Enter choice: ");
+            String line = scan.nextLine();
+            try {
+                int choice = Integer.parseInt(line.trim());
+                System.out.println("");
+                return choice;
+            } catch (NumberFormatException ex) {
+                System.out.println("Invalid input for " + menuTitle + ". Please enter a number.");
+            }
+        }
+    }
     
     public int getMainMenuChoice(){
         System.out.println("\nMAIN MENU");
         System.out.println("1.Staff");
         System.out.println("2.Student");
         System.out.println("0.Quit");
-        System.out.print("Enter choice: ");
-        int choice = scan.nextInt();
-        scan.nextLine();
-        System.out.println("");
-        return choice;
+        return readMenuChoice("MAIN MENU");
     }
     
     public int getStaffMenu(){
@@ -36,11 +46,7 @@ public class BookMaintenanceUI {
         System.out.println("4.Search book");
         System.out.println("5.Display all books");
         System.out.println("0.Quit");
-        System.out.print("Enter choice: ");
-        int choice = scan.nextInt();
-        scan.nextLine();
-        System.out.println("");
-        return choice;
+        return readMenuChoice("Staff Menu");
     }
     
     public int getStudentMenu(){
@@ -48,11 +54,7 @@ public class BookMaintenanceUI {
         System.out.println("1.Search book");
         System.out.println("2.Display all books");
         System.out.println("0.Quit");
-        System.out.print("Enter choice: ");
-        int choice = scan.nextInt();
-        scan.nextLine();
-        System.out.println("");
-        return choice;
+        return readMenuChoice("Student Menu");
     }
     
     public void listAllBooks (String outputStr){

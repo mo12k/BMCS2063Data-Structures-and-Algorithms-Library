@@ -35,21 +35,19 @@ public class BookDAO {
         }
     }
     
-    public ListInterface<Book> retriveFromFile(){
+    public ListInterface<Book> retrieveFromFile(){
         File file = new File(filename);
         ListInterface<Book> bookList = new ArrayList<>();
-        try{
-            ObjectInputStream oiStream = new ObjectInputStream(new FileInputStream(file));
+        try {
+            ObjectInputStream oiStream = new ObjectInputStream(new FileInputStream(file)) ;
             bookList = (ArrayList<Book>) (oiStream.readObject());
-            oiStream.close();
-        }catch (FileNotFoundException ex){
-            System.out.println("\nFIle not found");            
-        }catch (IOException ex){
-            System.out.println("\nCannot read from file.");            
-        }catch (ClassNotFoundException ex){
+        } catch (FileNotFoundException ex) {
+            System.out.println("\nFile not found");
+        } catch (IOException ex) {
+            System.out.println("\nCannot read from file.");
+        } catch (ClassNotFoundException ex) {
             System.out.println("\nClass not found.");
-        }finally{
-            return bookList;
         }
+        return bookList;
     }
 }
