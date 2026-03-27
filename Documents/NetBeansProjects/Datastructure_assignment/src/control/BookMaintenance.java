@@ -70,7 +70,11 @@ public class BookMaintenance {
                     if (results.isEmpty()) {
                         System.out.println("No matching books found.");
                     } else {
-                        bookUI.listAllBooks(formatBookList(results));
+                        String outputStr = "";
+                        for (int i = 1; i <= results.getNumberOfEntries(); i++) {
+                            outputStr += results.getEntry(i) + "\n";
+                        }
+                        bookUI.listAllBooks(outputStr);
                     }
                 }
                 case 5 -> displayBooks();
@@ -196,26 +200,16 @@ public class BookMaintenance {
         return -1;
     }
     
-    public String getAllProducts(){
-        return formatBookList(bookList);
-    }
-
-    private String formatBookList(ListInterface<Book> list) {
-        if (list == null || list.isEmpty()) {
-            return "(no books)";
-        }
-        StringBuilder outputStr = new StringBuilder();
-        for (int i = 1; i <= list.getNumberOfEntries(); i++) {
-            Book book = list.getEntry(i);
-            if (book != null) {
-                outputStr.append(book).append("\n");
-            }
-        }
-        return outputStr.toString();
+    public String getAllBooks() {
+      String outputStr = "";
+      for (int i = 1; i <= bookList.getNumberOfEntries(); i++) {
+        outputStr += bookList.getEntry(i) + "\n";
+      }
+      return outputStr;
     }
     
     public void displayBooks(){
-        bookUI.listAllBooks(getAllProducts());
+        bookUI.listAllBooks(getAllBooks());
     }
     
     public static void main(String[] args){
