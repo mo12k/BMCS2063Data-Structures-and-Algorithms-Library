@@ -20,7 +20,33 @@ public class BookMaintenance {
     private BookMaintenanceUI bookUI = new BookMaintenanceUI();
     
     public BookMaintenance(){
-        bookList = bookDAO.retriveFromFile();
+        bookList = bookDAO.retrieveFromFile();
+        syncNextBookIdFromLoadedData();
+    }
+
+    private void syncNextBookIdFromLoadedData() {
+        int maxNumericId = 0;
+        for (int i = 1; i <= bookList.getNumberOfEntries(); i++) {
+            Book book = bookList.getEntry(i);
+            if (book == null || book.getBookID() == null) {
+                continue;
+            }
+
+            String id = book.getBookID().trim();
+            if (id.length() < 2 || Character.toUpperCase(id.charAt(0)) != 'B') {
+                continue;
+            }
+
+            try {
+                int numericId = Integer.parseInt(id.substring(1));
+                if (numericId > maxNumericId) {
+                    maxNumericId = numericId;
+                }
+            } catch (NumberFormatException ex) {
+                // Ignore malformed IDs and continue scanning valid ones.
+            }
+        }
+        Book.setNextBookNumber(maxNumericId + 1);
     }
     
     /**
