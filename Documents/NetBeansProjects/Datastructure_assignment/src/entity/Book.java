@@ -1,16 +1,10 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package entity;
 
+import adt.ArrayList;
+import adt.ListInterface;
 import java.io.Serializable;
 import java.util.Objects;
 
-/**
- *
- * @author Mok
- */
 public class Book implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -21,10 +15,12 @@ public class Book implements Serializable {
     private int yearPublished;
     private int quantity;
     private boolean isAvailable;
-    
+    private ListInterface<Student> waitingList;
+
     private static int BookCount = 1;
 
     public Book() {
+        this.waitingList = new ArrayList<>();
     }
 
     public Book(String title, String author, String category, int yearPublished, boolean isAvailable) {
@@ -35,6 +31,7 @@ public class Book implements Serializable {
         this.yearPublished = yearPublished;
         this.quantity = 1;
         this.isAvailable = isAvailable;
+        this.waitingList = new ArrayList<>();
     }
 
     public Book(String title, String author, String category, int yearPublished, int quantity) {
@@ -45,6 +42,7 @@ public class Book implements Serializable {
         this.yearPublished = yearPublished;
         setQuantity(quantity);
         this.isAvailable = this.quantity > 0;
+        this.waitingList = new ArrayList<>();
     }
 
     public String getBookID() {
@@ -93,6 +91,7 @@ public class Book implements Serializable {
 
     public void setQuantity(int quantity) {
         this.quantity = Math.max(0, quantity);
+        this.isAvailable = this.quantity > 0;
     }
 
     public boolean isIsAvailable() {
@@ -102,11 +101,22 @@ public class Book implements Serializable {
     public void setIsAvailable(boolean isAvailable) {
         this.isAvailable = isAvailable;
     }
-    
-    private String generateBookID(){
-        String id = String.format("B%04d", BookCount++);
-        return id;
-}
+
+    public ListInterface<Student> getWaitingList() {
+        return waitingList;
+    }
+
+    public void setWaitingList(ListInterface<Student> waitingList) {
+        this.waitingList = waitingList;
+    }
+
+    public int getWaitingListCount() {
+        return waitingList.getNumberOfEntries();
+    }
+
+    private String generateBookID() {
+        return String.format("B%04d", BookCount++);
+    }
 
     public static void setNextBookNumber(int nextBookNumber) {
         if (nextBookNumber < 1) {
@@ -131,13 +141,14 @@ public class Book implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("%s | %s | %s | %s | %d | Qty: %d | Available: %s",
+        return String.format("%s | %s | %s | %s | %d | Qty: %d | Available: %s | Waiting List: %d",
                 bookID,
                 title,
                 author,
                 category,
                 yearPublished,
                 quantity,
-                (isIsAvailable() ? "Yes" : "No"));
+                (isIsAvailable() ? "Yes" : "No"),
+                getWaitingListCount());
     }
 }
