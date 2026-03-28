@@ -1,27 +1,34 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Interface.java to edit this template
+ */
 package adt;
 
-
+/**
+ *
+ * @author Mok
+ * @param <T>
+ */
 public interface ListInterface<T> {
-
-  public boolean add(T newEntry);
-
-  public boolean add(int newPosition, T newEntry);
-
-  public T remove(int givenPosition);
-
-  public void clear();
-
-
-  public boolean replace(int givenPosition, T newEntry);
-
-
-  public T getEntry(int givenPosition);
-
-  public boolean contains(T anEntry);
-
-  public int getNumberOfEntries();
-
-  public boolean isEmpty();
-
-  public boolean isFull();
+    boolean add(T newEntry);
+    
+    boolean add(int index, T newEntry);
+    
+    T get(int index);
+    
+    T set(int index, T anEntry);
+    
+    T remove(int index);
+    
+    boolean remove(T anEntry);
+    
+    boolean contains(T anEntry);
+    
+    int indexOf(T anEntry);
+    
+    int size();
+    
+    boolean isEmpty();
+    
+    void clear();
 }

@@ -27,27 +27,23 @@ public class BookDAO {
         try(ObjectOutputStream ooStream = new ObjectOutputStream(new FileOutputStream(file))){
             ooStream.writeObject(bookList);
         }catch(FileNotFoundException ex){
-            System.out.println("\nFIle not found");
+            System.out.println("\nFile not found");
         }catch (IOException ex){
             System.out.println("\nCannot save to file");
         }
     }
     
+    @SuppressWarnings("unchecked")
     public ListInterface<Book> retrieveFromFile(){
         File file = new File(filename);
         ListInterface<Book> bookList = new DoublyLinkedList<>();
         try (ObjectInputStream oiStream = new ObjectInputStream(new FileInputStream(file))) {
             Object storedData = oiStream.readObject();
-            if (storedData instanceof ListInterface<?>) {
-                ListInterface<?> rawList = (ListInterface<?>) storedData;
-                ListInterface<Book> convertedList = new DoublyLinkedList<>();
-                for (int i = 1; i <= rawList.getNumberOfEntries(); i++) {
-                    convertedList.add((Book) rawList.getEntry(i));
-                }
-                bookList = convertedList;
+            if (storedData instanceof DoublyLinkedList<?>) {
+                bookList = (DoublyLinkedList<Book>) storedData;
             }
         } catch (FileNotFoundException ex) {
-            System.out.println("\nFile not found");
+            System.out.println("\nNo saved books found. Starting with empty list.");
         } catch (IOException ex) {
             System.out.println("\nCannot read from file.");
         } catch (ClassNotFoundException ex) {

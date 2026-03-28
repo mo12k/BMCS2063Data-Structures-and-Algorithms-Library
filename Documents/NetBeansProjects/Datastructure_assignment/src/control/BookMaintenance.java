@@ -21,13 +21,33 @@ public class BookMaintenance {
     
     public BookMaintenance(){
         bookList = bookDAO.retrieveFromFile();
+        
+        // Initialize with sample data if list is empty
+        if (bookList.isEmpty()) {
+            initializeSampleBooks();
+        }
+        
         syncNextBookIdFromLoadedData();
+    }
+    
+    private void initializeSampleBooks() {
+        // Add some novels and other books
+        bookList.add(new Book("The Great Gatsby", "F. Scott Fitzgerald", "Novel", 1925, 5));
+        bookList.add(new Book("To Kill a Mockingbird", "Harper Lee", "Novel", 1960, 3));
+        bookList.add(new Book("1984", "George Orwell", "Novel", 1949, 4));
+        bookList.add(new Book("Pride and Prejudice", "Jane Austen", "Novel", 1813, 6));
+        bookList.add(new Book("The Catcher in the Rye", "J.D. Salinger", "Novel", 1951, 2));
+        bookList.add(new Book("Brave New World", "Aldous Huxley", "Novel", 1932, 3));
+        bookList.add(new Book("Java Programming", "Bill Joy", "Reference", 2015, 5));
+        bookList.add(new Book("Effective Java", "Joshua Bloch", "Programming", 2018, 4));
+        
+        bookDAO.saveToFile(bookList);
     }
 
     private void syncNextBookIdFromLoadedData() {
         int maxNumericId = 0;
-        for (int i = 1; i <= bookList.getNumberOfEntries(); i++) {
-            Book book = bookList.getEntry(i);
+        for (int i = 1; i <= bookList.size(); i++) {
+            Book book = bookList.get(i);
             if (book == null || book.getBookID() == null) {
                 continue;
             }
@@ -97,8 +117,8 @@ public class BookMaintenance {
                         System.out.println("No matching books found.");
                     } else {
                         String outputStr = "";
-                        for (int i = 1; i <= results.getNumberOfEntries(); i++) {
-                            outputStr += results.getEntry(i) + "\n";
+                        for (int i = 1; i <= results.size(); i++) {
+                            outputStr += results.get(i) + "\n";
                         }
                         bookUI.listAllBooks(outputStr);
                     }
@@ -123,8 +143,8 @@ public class BookMaintenance {
                         System.out.println("No matching books found.");
                     } else {
                         String outputStr = "";
-                        for (int i = 1; i <= results.getNumberOfEntries(); i++) {
-                            outputStr += results.getEntry(i) + "\n";
+                        for (int i = 1; i <= results.size(); i++) {
+                            outputStr += results.get(i) + "\n";
                         }
                         bookUI.listAllBooks(outputStr);
                     }
@@ -139,15 +159,28 @@ public class BookMaintenance {
         ListInterface<Book> matchingBooks = new DoublyLinkedList<>();
         String searchLower = (searchName == null) ? "" : searchName.toLowerCase().trim();
 
-        for (int i = 1; i <= bookList.getNumberOfEntries(); i++) {
-            Book book = bookList.getEntry(i);
+        // Use ADT contains() for exact-ID search first.
+        if (!searchLower.isEmpty() && searchLower.matches("b\\d+")) {
+            Book probe = new Book();
+            probe.setBookID(searchLower.toUpperCase());
+            if (bookList.contains(probe)) {
+                Book exactBook = findBookById(searchLower);
+                if (exactBook != null) {
+                    matchingBooks.add(exactBook);
+                    return matchingBooks;
+                }
+            }
+        }
+
+        for (int i = 1; i <= bookList.size(); i++) {
+            Book book = bookList.get(i);
             if (book == null) {
                 continue;
             }
             boolean matchesId = book.getBookID() != null && book.getBookID().toLowerCase().contains(searchLower);
             boolean matchesTitle = book.getTitle() != null && book.getTitle().toLowerCase().contains(searchLower);
             boolean matchesAuthor = book.getAuthor() != null && book.getAuthor().toLowerCase().contains(searchLower);
-            if (matchesId || matchesTitle || matchesAuthor) {
+            if ((matchesId || matchesTitle || matchesAuthor) && !matchingBooks.contains(book)) {
                 matchingBooks.add(book);
             }
         }
@@ -169,7 +202,7 @@ public class BookMaintenance {
             return;
         }
 
-        Book book = bookList.getEntry(position);
+        Book book = bookList.get(position);
         bookUI.printBookDetails(book);
         if (!bookUI.confirm("Update this book?") ) {
             return;
@@ -189,28 +222,49 @@ public class BookMaintenance {
         book.setQuantity(quantity);
         book.setIsAvailable(available);
 
-        bookList.replace(position, book);
+        bookList.set(position, book);
         bookDAO.saveToFile(bookList);
         System.out.println("Book updated.");
     }
 
     private void removeBook() {
         String bookId = bookUI.inputBookId();
-        int position = findBookPositionById(bookId);
-        if (position == -1) {
+        Book book = findBookById(bookId);
+        if (book == null) {
             System.out.println("Book not found.");
             return;
         }
 
-        Book book = bookList.getEntry(position);
         bookUI.printBookDetails(book);
         if (!bookUI.confirm("Remove this book?") ) {
             return;
         }
 
-        bookList.remove(position);
-        bookDAO.saveToFile(bookList);
-        System.out.println("Book removed.");
+        if (bookList.remove(book)) {
+            bookDAO.saveToFile(bookList);
+            System.out.println("Book removed.");
+        } else {
+            System.out.println("Book not found.");
+        }
+    }
+
+    private Book findBookById(String bookId) {
+        if (bookId == null) {
+            return null;
+        }
+
+        String needle = bookId.trim();
+        if (needle.isEmpty()) {
+            return null;
+        }
+
+        for (int i = 1; i <= bookList.size(); i++) {
+            Book book = bookList.get(i);
+            if (book != null && book.getBookID() != null && book.getBookID().equalsIgnoreCase(needle)) {
+                return book;
+            }
+        }
+        return null;
     }
 
     private int findBookPositionById(String bookId) {
@@ -221,8 +275,8 @@ public class BookMaintenance {
         if (needle.isEmpty()) {
             return -1;
         }
-        for (int i = 1; i <= bookList.getNumberOfEntries(); i++) {
-            Book book = bookList.getEntry(i);
+        for (int i = 1; i <= bookList.size(); i++) {
+            Book book = bookList.get(i);
             if (book != null && book.getBookID() != null && book.getBookID().equalsIgnoreCase(needle)) {
                 return i;
             }
@@ -232,8 +286,8 @@ public class BookMaintenance {
     
     public String getAllBooks() {
       String outputStr = "";
-      for (int i = 1; i <= bookList.getNumberOfEntries(); i++) {
-        outputStr += bookList.getEntry(i) + "\n";
+      for (int i = 1; i <= bookList.size(); i++) {
+        outputStr += bookList.get(i) + "\n";
       }
       return outputStr;
     }
