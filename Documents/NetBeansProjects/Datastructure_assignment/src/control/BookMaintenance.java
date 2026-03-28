@@ -15,7 +15,7 @@ import utility.MessageUI;
  * @author Mok
  */
 public class BookMaintenance {
-    private ListInterface<Book> bookList = new ArrayList<>();
+    private ListInterface<Book> bookList = new DoublyLinkedList<>();
     private BookDAO bookDAO = new BookDAO();
     private BookMaintenanceUI bookUI = new BookMaintenanceUI();
     
@@ -136,7 +136,7 @@ public class BookMaintenance {
     }
     
     public ListInterface<Book> searchBook(String searchName){
-        ListInterface<Book> matchingBooks = new ArrayList<>();
+        ListInterface<Book> matchingBooks = new DoublyLinkedList<>();
         String searchLower = (searchName == null) ? "" : searchName.toLowerCase().trim();
 
         for (int i = 1; i <= bookList.getNumberOfEntries(); i++) {
