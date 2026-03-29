@@ -1,6 +1,6 @@
 package entity;
 
-import adt.ArrayList;
+import adt.DoublyLinkedList;
 import adt.ListInterface;
 import java.io.Serializable;
 import java.util.Objects;
@@ -20,7 +20,7 @@ public class Book implements Serializable {
     private static int BookCount = 1;
 
     public Book() {
-        this.waitingList = new ArrayList<>();
+        this.waitingList = new DoublyLinkedList<>();
     }
 
     public Book(String title, String author, String category, int yearPublished, boolean isAvailable) {
@@ -31,7 +31,7 @@ public class Book implements Serializable {
         this.yearPublished = yearPublished;
         this.quantity = 1;
         this.isAvailable = isAvailable;
-        this.waitingList = new ArrayList<>();
+        this.waitingList = new DoublyLinkedList<>();
     }
 
     public Book(String title, String author, String category, int yearPublished, int quantity) {
@@ -42,7 +42,7 @@ public class Book implements Serializable {
         this.yearPublished = yearPublished;
         setQuantity(quantity);
         this.isAvailable = this.quantity > 0;
-        this.waitingList = new ArrayList<>();
+        this.waitingList = new DoublyLinkedList<>();
     }
 
     public String getBookID() {
@@ -111,7 +111,7 @@ public class Book implements Serializable {
     }
 
     public int getWaitingListCount() {
-        return waitingList.getNumberOfEntries();
+        return waitingList.size();
     }
 
     private String generateBookID() {
