@@ -111,7 +111,10 @@ public class Book implements Serializable {
     }
 
     public int getWaitingListCount() {
-        return waitingList.size();
+                if (waitingList == null) {
+                return 0;
+            }
+            return waitingList.size();
     }
 
     private String generateBookID() {

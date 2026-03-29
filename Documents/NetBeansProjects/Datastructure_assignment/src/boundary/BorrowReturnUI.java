@@ -119,7 +119,7 @@ public class BorrowReturnUI {
         
         if (!control.isValidStudentId(studentId)) {
         System.out.println("Invalid Student ID format. Returning to menu...");
-        return; // 🔥直接回 menu
+        return; 
         }
         
         String keyword = inputSearchKeyword();
@@ -173,7 +173,7 @@ public class BorrowReturnUI {
         
         if (!control.isValidStudentId(studentId)) {
             System.out.println("Invalid Student ID format. Returning to menu...");
-            return; // 🔥直接回 menu
+            return; 
         }
         
         
