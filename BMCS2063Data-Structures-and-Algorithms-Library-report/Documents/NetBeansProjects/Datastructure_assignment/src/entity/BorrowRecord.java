@@ -99,7 +99,7 @@ public class BorrowRecord implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("%s | Borrower: %s | Book: %s | Borrow Date: %s | Return Date: %s | Expiry Dtae: %s | Status: %s  ",
+        return String.format("%s | Borrower: %s | Book: %s | Borrow Date: %s | Return Date: %s | Expiry Date: %s | Status: %s  ",
                 recordID,
                 studentID,
                 bookID,
