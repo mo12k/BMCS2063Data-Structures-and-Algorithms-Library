@@ -37,6 +37,18 @@ public class BorrowRecord implements Serializable {
         this.status = "BORROWED";
     }
 
+    public BorrowRecord(String studentID, String bookID, String borrowDate, String returnDate, String status, String expiryDate) {
+        this.recordID = generateRecordID();
+        this.studentID = studentID;
+        this.bookID = bookID;
+        this.borrowDate = borrowDate;
+        this.returnDate = returnDate;
+        this.status = status;
+        this.expiryDate = expiryDate;
+    }
+
+    
+    
     private String generateRecordID() {
         return String.format("R%04d", recordCount++);
     }

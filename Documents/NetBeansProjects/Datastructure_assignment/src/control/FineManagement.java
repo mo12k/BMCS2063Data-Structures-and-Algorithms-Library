@@ -10,9 +10,10 @@ package control;
  */
 import adt.DoublyLinkedList;
 import adt.ListInterface;
-import entity.Fine;
+import entity.*;
 import utility.DateUtil;
 import utility.FineCalculator;
+import java.time.LocalDate;
 
 public class FineManagement {
     

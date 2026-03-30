@@ -115,8 +115,8 @@ public class BorrowReturnUI {
     private void searchBookAndBorrow() {
         System.out.println("\n========== Borrow Book ==========");
 
-        String studentId = inputBorrowerId();
-        
+        String uncorretstudentId = inputBorrowerId();
+        String studentId=uncorretstudentId.toUpperCase();
         if (!control.isValidStudentId(studentId)) {
         System.out.println("Invalid Student ID format. Returning to menu...");
         return; 
@@ -125,14 +125,14 @@ public class BorrowReturnUI {
         String keyword = inputSearchKeyword();
 
         System.out.println("\nSearch Results:");
-        String result = control.searchBook(keyword);
+        String resultbook = control.searchBook(keyword);
 
-        if (result == null || result.trim().isEmpty()) {
+        if (resultbook == null || resultbook.trim().isEmpty()) {
             System.out.println("No matching books found.");
             return;
         }
 
-        System.out.println(result);
+        System.out.println(resultbook);
 
         String bookId = inputBookId();
 
@@ -151,13 +151,27 @@ public class BorrowReturnUI {
             String confirm = scanner.nextLine();
 
             if (confirm.equalsIgnoreCase("Y")) {
-                boolean success = control.borrowBook(studentId, bookId);
+            int result = control.borrowBook(studentId, bookId);
 
-                if (success) {
+            switch (result) {
+                case 1:
                     System.out.println("Book borrowed successfully.");
-                } else {
+                    break;
+                case -1:
+                    System.out.println("Invalid student ID.");
+                    break;
+                case -2:
+                    System.out.println("Book not found.");
+                    break;
+                case -3:
+                    System.out.println("You already borrowed this book.");
+                    break;
+                case -4:
+                    System.out.println("Book is not available.");
+                    break;
+                default:
                     System.out.println("Borrow failed.");
-                }
+            }
             } else {
                 System.out.println("Borrow cancelled.");
             }
@@ -169,8 +183,8 @@ public class BorrowReturnUI {
     private void returnBook() {
         System.out.println("\n=============== RETURN BOOK ===============");
 
-        String studentId = inputBorrowerId();
-        
+        String uncorretstudentId = inputBorrowerId();
+        String studentId=uncorretstudentId.toUpperCase();
         if (!control.isValidStudentId(studentId)) {
             System.out.println("Invalid Student ID format. Returning to menu...");
             return; 
