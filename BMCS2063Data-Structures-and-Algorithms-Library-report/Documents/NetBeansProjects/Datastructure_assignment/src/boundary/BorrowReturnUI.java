@@ -36,6 +36,8 @@ public class BorrowReturnUI {
     }
 
     private int getMainMenuChoice() {
+        
+        
         System.out.println("\n======================================");
         System.out.println("     BORROW & RETURN BOOK MODULE");
         System.out.println("======================================");
@@ -115,8 +117,9 @@ public class BorrowReturnUI {
     private void searchBookAndBorrow() {
         System.out.println("\n========== Borrow Book ==========");
 
-        String studentId = inputBorrowerId();
-        
+        String uncorretstudentId = inputBorrowerId();
+        String studentId=uncorretstudentId.toUpperCase();
+
         if (!control.isValidStudentId(studentId)) {
         System.out.println("Invalid Student ID format. Returning to menu...");
         return; 
@@ -125,16 +128,17 @@ public class BorrowReturnUI {
         String keyword = inputSearchKeyword();
 
         System.out.println("\nSearch Results:");
-        String result = control.searchBook(keyword);
+        String resultbook = control.searchBook(keyword);
 
-        if (result == null || result.trim().isEmpty()) {
+        if (resultbook == null || resultbook.trim().isEmpty()) {
             System.out.println("No matching books found.");
             return;
         }
 
-        System.out.println(result);
+        System.out.println(resultbook);
 
-        String bookId = inputBookId();
+        String bookIdC = inputBookId();
+        String bookId=bookIdC.toUpperCase();
 
         Book book = control.findBookById(bookId);
 
@@ -148,36 +152,78 @@ public class BorrowReturnUI {
         if (control.checkAvailability(bookId)) {
             System.out.println("Book is available.");
             System.out.print("Proceed to borrow? (Y/N): ");
-            String confirm = scanner.nextLine();
+            String confirm = scanner.nextLine().trim();
 
             if (confirm.equalsIgnoreCase("Y")) {
-                boolean success = control.borrowBook(studentId, bookId);
+                int result = control.borrowBook(studentId, bookId);
 
-                if (success) {
-                    System.out.println("Book borrowed successfully.");
-                } else {
-                    System.out.println("Borrow failed.");
+                switch (result) {
+                    case 1:
+                        System.out.println("Book borrowed successfully.");
+                        break;
+                    case -1:
+                        System.out.println("Invalid student ID.");
+                        break;
+                    case -2:
+                        System.out.println("Book not found.");
+                        break;
+                    case -3:
+                        System.out.println("You already borrowed this book.");
+                        break;
+                    case -4:
+                        System.out.println("Book is not available.");
+                        break;
+                    default:
+                        System.out.println("Borrow failed.");
                 }
             } else {
                 System.out.println("Borrow cancelled.");
             }
+
         } else {
             System.out.println("Book is not available.");
-        }
-    }
+            System.out.print("Do you want to join the waiting list? (Y/N): ");
+            String joinWaitList = scanner.nextLine().trim();
 
-    private void returnBook() {
+            if (joinWaitList.equalsIgnoreCase("Y")) {
+                boolean joined = control.addToWaitingList(studentId, bookId);
+
+                if (joined) {
+                    System.out.println("You have been added to the waiting list.");
+                } else {
+                    System.out.println("Failed to join waiting list.");
+                }
+            } else {
+                System.out.println("Waiting list request cancelled.");
+            }
+        }}
+
+    private void returnBook(){
         System.out.println("\n=============== RETURN BOOK ===============");
 
-        String studentId = inputBorrowerId();
+
+        String uncorrectstudentId = inputBorrowerId();
+        String studentId = uncorrectstudentId.toUpperCase();
         
+
         if (!control.isValidStudentId(studentId)) {
             System.out.println("Invalid Student ID format. Returning to menu...");
             return; 
         }
         
+        String records = control.getActiveBorrowRecordStringByStudent(studentId);
+
+        if (records == null || records.trim().isEmpty()) {
+            System.out.println("No active borrowed records found for this student.");
+            return;
+        }
+
+        System.out.println("\nYour Active Borrowed Records:");
+        System.out.println(records);
         
-        String bookId = inputBookId();
+        
+        String bookIdC = inputBookId();
+        String bookId=bookIdC.toUpperCase();
 
         
 
@@ -186,21 +232,49 @@ public class BorrowReturnUI {
         if (success) {
             System.out.println("Book returned successfully.");
         } else {
-            System.out.println("Return failed. Record not found or already returned.");
+            System.out.println("Return failed. Record not found .");
         }
     }
 
     private void displayBorrowedBooks() {
-        System.out.println("\n=========== BORROWED BOOK LIST ===========");
+            System.out.println("\n=========== BORROWED BOOK LIST ===========");
 
-        String output = control.getAllBorrowedBooks();
+        
+            System.out.println("Select Status:");
+            System.out.println("1. BORROWED");
+            System.out.println("2. RETURNED");
+            System.out.println("3. EXPIRED");
+            System.out.print("Enter choice: ");
 
-        if (output == null || output.trim().isEmpty()) {
-            System.out.println("No borrowed books found.");
-        } else {
-            System.out.println(output);
+            int choice = readInt();
+
+            String status = "";
+
+            switch (choice) {
+                case 1:
+                    status = "BORROWED";
+                    break;
+                case 2:
+                    status = "RETURNED";
+                    break;
+                case 3:
+                    status = "EXPIRED";
+                    break;
+                default:
+                    System.out.println("Invalid choice.");
+                    return;
+            }
+
+            
+            String output = control.getRecordsByStatus(status);
+
+            if (output == null || output.trim().isEmpty()) {
+                System.out.println("No records found for status: " + status);
+            } else {
+                System.out.println("\nStatus: " + status);
+                System.out.println(output);
+            }
         }
-    }
 
     private String inputBorrowerId() {
         System.out.print("Enter Student ID: ");
