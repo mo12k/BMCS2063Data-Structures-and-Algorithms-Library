@@ -56,7 +56,7 @@ public class BorrowReturnBook {
                 return false;
             }
 
-            record.setReturnDate();
+            record.setReturnDate(LocalDate.now().toString());
             record.setStatus("RETURNED");
 
             book.setQuantity(book.getQuantity() + 1);
