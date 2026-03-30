@@ -28,6 +28,7 @@ public class BorrowRecord implements Serializable {
  
 
     public BorrowRecord(String borrowerID, String bookID) {
+        
         this.recordID = generateRecordID();
         this.studentID = borrowerID;
         this.bookID = bookID;
@@ -36,16 +37,18 @@ public class BorrowRecord implements Serializable {
         this.expiryDate = setExDate.toString();
         this.status = "BORROWED";
     }
-
-    public BorrowRecord(String studentID, String bookID, String borrowDate, String returnDate, String status, String expiryDate) {
+    
+    public BorrowRecord(String borrowerID, String bookID , String borrowDate, String returnDate, String expiryDate, String status) {
         this.recordID = generateRecordID();
-        this.studentID = studentID;
+        this.studentID = borrowerID;
         this.bookID = bookID;
-        this.borrowDate = borrowDate;
+        this.borrowDate =borrowDate;
         this.returnDate = returnDate;
-        this.status = status;
         this.expiryDate = expiryDate;
+        this.status = status;
     }
+
+  
 
     
     
@@ -111,7 +114,7 @@ public class BorrowRecord implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("%s | Borrower: %s | Book: %s | Borrow Date: %s | Return Date: %s | Expiry Dtae: %s | Status: %s  ",
+        return String.format("%s | Student: %s | Book: %s | Borrow Date: %s | Return Date: %s | Expiry Date: %s | Status: %s  ",
                 recordID,
                 studentID,
                 bookID,

@@ -97,6 +97,7 @@ public class BorrowReturnBook {
         return book != null && book.getQuantity() > 0 && book.isIsAvailable();
     }
 
+
        public int borrowBook(String studentId, String bookId) {
 
                 reloadData(); 
@@ -130,6 +131,7 @@ public class BorrowReturnBook {
                 borrowRecordDAO.saveToFile(borrowRecordList);
 
                 return 1; 
+
             }
 
       
@@ -326,7 +328,8 @@ public class BorrowReturnBook {
                 && record.getBorrowerID()!= null
                 && record.getBorrowerID().equalsIgnoreCase(studentId.trim())
                 && record.getStatus() != null
-                && record.getStatus().equalsIgnoreCase("BORROWED")) {
+                && (record.getStatus().equalsIgnoreCase("BORROWED") || record.getStatus().equalsIgnoreCase("EXPIRED"))
+                ) {
 
             Book book = findBookById(record.getBookID());
             String bookTitle = (book == null) ? "Unknown Book" : book.getTitle();
@@ -335,6 +338,7 @@ public class BorrowReturnBook {
                   .append(" | Book Name: ").append(bookTitle)
                   .append(" | Borrow Date: ").append(record.getBorrowDate())
                   .append(" | Expiry Date: ").append(record.getExpiryDate())
+                  .append(" | Status: ").append(record.getStatus())
                   .append("\n");
         }
     }
