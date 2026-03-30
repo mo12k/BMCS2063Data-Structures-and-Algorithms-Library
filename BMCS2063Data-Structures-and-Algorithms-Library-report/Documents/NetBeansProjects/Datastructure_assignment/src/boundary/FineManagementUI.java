@@ -60,6 +60,9 @@ public class FineManagementUI {
 
             switch (choice) {
                 case 1:
+                    calculateFine();
+                    break;
+                case 2:
                     displayUnpaidFines();
                     break;
                 case 0:
@@ -97,7 +100,8 @@ public class FineManagementUI {
         System.out.println("\n--------------------------------------");
         System.out.println("              STAFF MENU");
         System.out.println("--------------------------------------");
-        System.out.println("1. View Unpaid Fines");
+        System.out.println("1. Calculates Fines");
+        System.out.println("2. View Unpaid Fines");
         System.out.println("0. Back");
         System.out.print("Enter choice: ");
         return readInt();
@@ -114,6 +118,24 @@ public class FineManagementUI {
         return readInt();
     }
 
+    private void calculateFine() {
+        System.out.println("\n========== Calculate Fine ==========");
+        String studentID = inputStudentID();
+
+        System.out.print("Enter Book ID: ");
+        String bookID = scanner.nextLine().trim();
+
+        var record = borrowControl.findBorrowRecordForFine(studentID, bookID);
+
+        if (record == null) {
+            System.out.println("No matching borrow record found.");
+            return;
+        }
+
+        String result = fineControl.calculateFine(record);
+        System.out.println(result);
+    }
+    
     private void displayUnpaidFines() {
         System.out.println("\n========== Unpaid Fines ==========");
         String result = fineControl.displayUnpaidFines();
