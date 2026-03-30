@@ -8,18 +8,21 @@ package entity;
  *
  * @author Yang
  */
-public class Fine {
+
+import java.io.Serializable;
+
+public class Fine implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private String fineID;
-    private Student student;
-    private Book book;
+    private BorrowRecord borrowRecord;
     private int overdueDays;
     private double amount;
     private String status; // Unpaid / Paid
 
-    public Fine(String fineID, Student student, Book book, int overdueDays, double amount, String status) {
+    public Fine(String fineID, BorrowRecord borrowRecord, int overdueDays, double amount, String status) {
         this.fineID = fineID;
-        this.student = student;
-        this.book = book;
+        this.borrowRecord = borrowRecord;
         this.overdueDays = overdueDays;
         this.amount = amount;
         this.status = status;
@@ -33,20 +36,12 @@ public class Fine {
         this.fineID = fineID;
     }
 
-    public Student getStudent() {
-        return student;
+    public BorrowRecord getBorrowRecord() {
+        return borrowRecord;
     }
 
-    public void setStudent(Student student) {
-        this.student = student;
-    }
-
-    public Book getBook() {
-        return book;
-    }
-
-    public void setBook(Book book) {
-        this.book = book;
+    public void setBorrowRecord(BorrowRecord borrowRecord) {
+        this.borrowRecord = borrowRecord;
     }
 
     public int getOverdueDays() {
@@ -72,6 +67,4 @@ public class Fine {
     public void setStatus(String status) {
         this.status = status;
     }
-
-    
 }
