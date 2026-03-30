@@ -84,7 +84,7 @@ public class BorrowRecord implements Serializable {
         return expiryDate;
     }
 
-    public void setExpiryDate() {
+    public void setExpiryDate(String expiryDate) {
         this.expiryDate = expiryDate;
     }
     
@@ -92,15 +92,15 @@ public class BorrowRecord implements Serializable {
         return borrowDate;
     }
 
-    public void setBorrowDate() {
+    public void setBorrowDate(String borrowDate) {
         this.borrowDate = borrowDate;
     }
 
     public String getReturnDate() {
-        return returnDate=setDate.toString();
+        return returnDate;
     }
 
-    public void setReturnDate() {
+    public void setReturnDate(String returnDate) {
         this.returnDate = returnDate;
     }
 
