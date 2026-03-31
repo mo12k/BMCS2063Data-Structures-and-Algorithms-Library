@@ -27,47 +27,37 @@ public class FineManagement {
         fineList = fineDAO.retrieveFromFile();
     }
 
-    public String calculateFine(BorrowRecord record) {
-        if (record == null) {
-            return "Fine creation failed. Borrow record is null.";
+    public void autoGenerateFines(ListInterface<BorrowRecord> recordList) {
+        for (int i = 1; i <= recordList.size(); i++) {
+            BorrowRecord record = recordList.get(i);
+
+            if (record == null || record.getExpiryDate() == null || record.getStatus() == null) {
+                continue;
+            }
+
+            LocalDate dueDate = LocalDate.parse(record.getExpiryDate());
+            int overdueDays = DateUtil.calculateOverdueDays(dueDate);
+
+            if (overdueDays > 0
+                    && !record.getStatus().equalsIgnoreCase("RETURNED")) {
+
+                Fine existingFine = findUnpaidFine(record.getBorrowerID(), record.getBookID());
+
+                if (existingFine == null) {
+                    Fine fine = new Fine(
+                            generateFineID(),
+                            record,
+                            overdueDays,
+                            FineCalculator.calculateFine(overdueDays),
+                            "Unpaid"
+                    );
+
+                    fineList.add(fine);
+                }
+            }
         }
 
-        if (record.getExpiryDate() == null || record.getExpiryDate().isEmpty()) {
-            return "Fine creation failed. Expiry date is missing.";
-        }
-
-        // optional: only fine overdue borrowed records
-        if (!record.getStatus().equalsIgnoreCase("BORROWED")
-                && !record.getStatus().equalsIgnoreCase("EXPIRED")) {
-            return "No fine applicable for this record status.";
-        }
-
-        Fine existingFine = findUnpaidFine(record.getBorrowerID(), record.getBookID());
-        if (existingFine != null) {
-            return "Unpaid fine already exists for this student and book.";
-        }
-
-        LocalDate dueDate = LocalDate.parse(record.getExpiryDate());
-        int overdueDays = DateUtil.calculateOverdueDays(dueDate);
-
-        if (overdueDays == 0) {
-            return "No overdue. No fine.";
-        }
-
-        double amount = FineCalculator.calculateFine(overdueDays);
-
-        Fine fine = new Fine(
-                generateFineID(),
-                record,
-                overdueDays,
-                amount,
-                "Unpaid"
-        );
-
-        fineList.add(fine);
         fineDAO.saveToFile(fineList);
-
-        return "Fine created: RM " + amount;
     }
 
     public String displayUnpaidFines() {

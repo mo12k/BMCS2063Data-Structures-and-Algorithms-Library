@@ -17,6 +17,7 @@ import entity.Book;
 import entity.BorrowRecord;
 import entity.Reservation;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 public class ReportManagement {
 
@@ -33,7 +34,6 @@ public class ReportManagement {
         reservationList = new DoublyLinkedList<>();
     }
 
-    // optional: let other module pass reservation list in
     public void setReservationList(ListInterface<Reservation> reservationList) {
         this.reservationList = reservationList;
     }
@@ -42,9 +42,8 @@ public class ReportManagement {
         return reservationList;
     }
 
-    // 1. Current Reserve Report
     public String getCurrentReserveReport() {
-        String output = "";
+        StringBuilder output = new StringBuilder();
 
         if (reservationList == null || reservationList.isEmpty()) {
             return "No current reservation records.";
@@ -56,16 +55,21 @@ public class ReportManagement {
             if (r != null
                     && r.getStatus() != null
                     && r.getStatus().equalsIgnoreCase("Active")) {
-                output += r + "\n";
+
+                output.append(String.format("%-12s %-12s %-10s %-15s %-12s%n",
+                        r.getReservationID(),
+                        r.getStudent() != null ? r.getStudent().getStudentID() : "N/A",
+                        r.getBook() != null ? r.getBook().getBookID() : "N/A",
+                        r.getReservationDate(),
+                        r.getStatus()));
             }
         }
 
-        return output.isEmpty() ? "No current reservation records." : output;
+        return output.length() == 0 ? "No current reservation records." : output.toString();
     }
 
-    // 2. Borrowed Book Report
     public String getBorrowedBooksReport() {
-        String output = "";
+        StringBuilder output = new StringBuilder();
 
         if (borrowRecordList == null || borrowRecordList.isEmpty()) {
             return "No borrowed books.";
@@ -77,16 +81,22 @@ public class ReportManagement {
             if (r != null
                     && r.getStatus() != null
                     && r.getStatus().equalsIgnoreCase("BORROWED")) {
-                output += r + "\n";
+
+                output.append(String.format("%-10s %-12s %-10s %-15s %-15s %-10s%n",
+                        r.getRecordID(),
+                        r.getBorrowerID(),
+                        r.getBookID(),
+                        r.getBorrowDate(),
+                        r.getExpiryDate(),
+                        r.getStatus()));
             }
         }
 
-        return output.isEmpty() ? "No borrowed books." : output;
+        return output.length() == 0 ? "No borrowed books." : output.toString();
     }
 
-    // 3. Overdue Books Report
     public String getOverdueBooksReport() {
-        String output = "";
+        StringBuilder output = new StringBuilder();
         LocalDate today = LocalDate.now();
 
         if (borrowRecordList == null || borrowRecordList.isEmpty()) {
@@ -104,23 +114,22 @@ public class ReportManagement {
                 LocalDate expiryDate = LocalDate.parse(r.getExpiryDate());
 
                 if (today.isAfter(expiryDate)) {
-                    long overdueDays = java.time.temporal.ChronoUnit.DAYS.between(expiryDate, today);
+                    long overdueDays = ChronoUnit.DAYS.between(expiryDate, today);
 
-                    output += r.getRecordID()
-                            + " | Borrower: " + r.getBorrowerID()
-                            + " | Book: " + r.getBookID()
-                            + " | Expiry Date: " + r.getExpiryDate()
-                            + " | Overdue Days: " + overdueDays
-                            + " | Status: " + r.getStatus()
-                            + "\n";
+                    output.append(String.format("%-10s %-12s %-10s %-15s %-15s %-10s%n",
+                            r.getRecordID(),
+                            r.getBorrowerID(),
+                            r.getBookID(),
+                            r.getExpiryDate(),
+                            overdueDays,
+                            r.getStatus()));
                 }
             }
         }
 
-        return output.isEmpty() ? "No overdue books." : output;
+        return output.length() == 0 ? "No overdue books." : output.toString();
     }
 
-    // 4. Most Borrowed Books Report
     public String getMostBorrowedBooksReport() {
         if (borrowRecordList == null || borrowRecordList.isEmpty()) {
             return "No borrowing records found.";
@@ -128,7 +137,7 @@ public class ReportManagement {
 
         ListInterface<String> countedBookIDs = new DoublyLinkedList<>();
         int highestCount = 0;
-        String output = "";
+        StringBuilder output = new StringBuilder();
 
         for (int i = 1; i <= borrowRecordList.size(); i++) {
             BorrowRecord currentRecord = borrowRecordList.get(i);
@@ -166,8 +175,6 @@ public class ReportManagement {
             return "No borrowing records found.";
         }
 
-        output += "Most Borrowed Book(s):\n";
-
         for (int i = 1; i <= countedBookIDs.size(); i++) {
             String bookID = countedBookIDs.get(i);
             int count = 0;
@@ -185,17 +192,14 @@ public class ReportManagement {
             if (count == highestCount) {
                 Book book = findBookById(bookID);
 
-                if (book != null) {
-                    output += book.getBookID()
-                            + " | " + book.getTitle()
-                            + " | Borrow Count: " + count + "\n";
-                } else {
-                    output += bookID + " | Borrow Count: " + count + "\n";
-                }
+                output.append(String.format("%-10s %-30s %-15d%n",
+                        bookID,
+                        book != null ? book.getTitle() : "Unknown Title",
+                        count));
             }
         }
 
-        return output;
+        return output.length() == 0 ? "No borrowing records found." : output.toString();
     }
 
     private Book findBookById(String bookID) {
