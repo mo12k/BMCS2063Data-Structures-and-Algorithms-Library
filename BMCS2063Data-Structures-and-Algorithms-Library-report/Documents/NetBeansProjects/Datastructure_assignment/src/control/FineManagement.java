@@ -25,6 +25,7 @@ public class FineManagement {
 
     public FineManagement() {
         fineList = fineDAO.retrieveFromFile();
+        initializeFineCounter();
     }
 
     public void autoGenerateFines(ListInterface<BorrowRecord> recordList) {
@@ -70,11 +71,12 @@ public class FineManagement {
                     && f.getBorrowRecord() != null
                     && f.getStatus().equalsIgnoreCase("Unpaid")) {
 
-                output += f.getFineID() + " | "
-                        + f.getBorrowRecord().getBorrowerID() + " | "
-                        + f.getBorrowRecord().getBookID() + " | RM "
-                        + f.getAmount() + " | "
-                        + f.getOverdueDays() + " day(s)\n";
+                output += String.format("%-7s | %-10s | %-7s | %-8s | %-10s%n",
+                        f.getFineID(),
+                        f.getBorrowRecord().getBorrowerID(),
+                        f.getBorrowRecord().getBookID(),
+                        "RM " + String.format("%.2f", f.getAmount()),
+                        f.getOverdueDays() + " day(s)");
             }
         }
 
@@ -109,10 +111,11 @@ public class FineManagement {
                     && f.getBorrowRecord() != null
                     && f.getBorrowRecord().getBorrowerID().equalsIgnoreCase(studentID)) {
 
-                output += f.getFineID() + " | "
-                        + f.getBorrowRecord().getBookID() + " | RM "
-                        + f.getAmount() + " | "
-                        + f.getStatus() + "\n";
+                output += String.format("%-7s | %-7s | %-8s | %-6s%n",
+                        f.getFineID(),
+                        f.getBorrowRecord().getBorrowerID(),
+                        "RM " + String.format("%.2f", f.getAmount()),
+                        f.getStatus());
             }
         }
 
@@ -135,6 +138,28 @@ public class FineManagement {
     }
 
     private String generateFineID() {
-        return "F" + String.format("%03d", fineCounter++);
+            return "F" + String.format("%03d", fineCounter++);
+        }
+
+        private void initializeFineCounter() {
+        int max = 0;
+
+        for (int i = 1; i <= fineList.size(); i++) {
+            Fine f = fineList.get(i);
+
+            if (f != null && f.getFineID() != null) {
+                try {
+                    // F001 → 001 → 1
+                    int num = Integer.parseInt(f.getFineID().substring(1));
+                    if (num > max) {
+                        max = num;
+                    }
+                } catch (Exception e) {
+                    
+                }
+            }
+        }
+
+        fineCounter = max + 1;
     }
 }

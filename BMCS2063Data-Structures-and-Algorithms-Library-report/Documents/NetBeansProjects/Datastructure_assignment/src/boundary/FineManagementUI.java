@@ -20,7 +20,9 @@ public class FineManagementUI {
     private BorrowReturnBook borrowControl = new BorrowReturnBook();
 
     public void startFineManagementModule() {
+        borrowControl.refreshExpiredStatus();
         fineControl.autoGenerateFines(borrowControl.getAllRecords());
+
         int choice;
 
         do {
@@ -34,21 +36,22 @@ public class FineManagementUI {
                     runStudentMenu();
                     break;
                 case 0:
-                    System.out.println("Exiting Fine Management Module...");
+                    System.out.println("\nExiting Fine Management Module...");
                     break;
                 default:
-                    System.out.println("Invalid choice.");
+                    System.out.println("\nInvalid choice. Please try again.");
             }
         } while (choice != 0);
     }
 
     private int getMainMenuChoice() {
-        System.out.println("\n======================================");
-        System.out.println("        FINE MANAGEMENT MODULE");
-        System.out.println("======================================");
+        System.out.println("\n==================================================");
+        System.out.println("               FINE MANAGEMENT MODULE             ");
+        System.out.println("==================================================");
         System.out.println("1. Staff");
         System.out.println("2. Student");
         System.out.println("0. Exit");
+        System.out.println("--------------------------------------------------");
         System.out.print("Enter choice: ");
         return readInt();
     }
@@ -64,10 +67,10 @@ public class FineManagementUI {
                     displayUnpaidFines();
                     break;
                 case 0:
-                    System.out.println("Back to main menu...");
+                    System.out.println("\nBack to main menu...");
                     break;
                 default:
-                    System.out.println("Invalid choice.");
+                    System.out.println("\nInvalid choice. Please try again.");
             }
         } while (choice != 0);
     }
@@ -86,63 +89,89 @@ public class FineManagementUI {
                     payFine();
                     break;
                 case 0:
-                    System.out.println("Back to main menu...");
+                    System.out.println("\nBack to main menu...");
                     break;
                 default:
-                    System.out.println("Invalid choice.");
+                    System.out.println("\nInvalid choice. Please try again.");
             }
         } while (choice != 0);
     }
 
     private int getStaffMenuChoice() {
-        System.out.println("\n--------------------------------------");
-        System.out.println("              STAFF MENU");
-        System.out.println("--------------------------------------");
+        System.out.println("\n--------------------------------------------------");
+        System.out.println("                    STAFF MENU                    ");
+        System.out.println("--------------------------------------------------");
         System.out.println("1. View Unpaid Fines");
         System.out.println("0. Back");
+        System.out.println("--------------------------------------------------");
         System.out.print("Enter choice: ");
         return readInt();
     }
 
     private int getStudentMenuChoice() {
-        System.out.println("\n--------------------------------------");
-        System.out.println("             STUDENT MENU");
-        System.out.println("--------------------------------------");
+        System.out.println("\n--------------------------------------------------");
+        System.out.println("                   STUDENT MENU                   ");
+        System.out.println("--------------------------------------------------");
         System.out.println("1. View My Fine History");
         System.out.println("2. Pay Fine");
         System.out.println("0. Back");
+        System.out.println("--------------------------------------------------");
         System.out.print("Enter choice: ");
         return readInt();
     }
-    
+
     private void displayUnpaidFines() {
-        System.out.println("\n========== Unpaid Fines ==========");
+        System.out.println("\n==================================================");
+        System.out.println("                  UNPAID FINES                    ");
+        System.out.println("==================================================");
+        System.out.printf("%-7s | %-10s | %-7s | %-8s | %-10s%n",
+        "Fine ID", "Student ID", "Book ID", "Amount", "Overdue");
+
         String result = fineControl.displayUnpaidFines();
         System.out.println(result);
+
+        pause();
     }
 
     private void payFine() {
-        System.out.println("\n========== Pay Fine ==========");
+        System.out.println("\n==================================================");
+        System.out.println("                     PAY FINE                     ");
+        System.out.println("==================================================");
+
         String fineID = inputFineID();
         String result = fineControl.payFine(fineID);
+
+        System.out.println("--------------------------------------------------");
         System.out.println(result);
+
+        pause();
     }
 
     private void viewStudentFineHistory() {
-        System.out.println("\n========== Fine History ==========");
+        System.out.println("\n==================================================");
+        System.out.println("                MY FINE HISTORY                   ");
+        System.out.println("==================================================");
+
         String studentID = inputStudentID();
+
+        System.out.printf("%-7s | %-8s | %-10s%n",
+                "Fine ID", "Amount", "Status");
+        
+
         String result = fineControl.viewStudentFines(studentID);
         System.out.println(result);
+
+        pause();
     }
 
     private String inputStudentID() {
         System.out.print("Enter Student ID: ");
-        return scanner.nextLine().trim();
+        return scanner.nextLine().trim().toUpperCase();
     }
 
     private String inputFineID() {
         System.out.print("Enter Fine ID: ");
-        return scanner.nextLine().trim();
+        return scanner.nextLine().trim().toUpperCase();
     }
 
     private int readInt() {
@@ -153,5 +182,11 @@ public class FineManagementUI {
         int value = scanner.nextInt();
         scanner.nextLine();
         return value;
+    }
+
+    private void pause() {
+        System.out.println("--------------------------------------------------");
+        System.out.print("Press Enter to continue...");
+        scanner.nextLine();
     }
 }
