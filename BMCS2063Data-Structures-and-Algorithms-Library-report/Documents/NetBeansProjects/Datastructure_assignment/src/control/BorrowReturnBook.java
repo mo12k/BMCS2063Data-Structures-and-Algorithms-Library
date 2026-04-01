@@ -200,7 +200,6 @@ public class BorrowReturnBook {
                           .append(" | Student Name: ").append(record.getBorrowName())
                           .append(" | Borrow Date: ").append(record.getBorrowDate())
                           .append(" | Return Date: ").append(record.getReturnDate() == null ? "-" : record.getReturnDate())
-                          .append(" | Status: ").append(record.getStatus())
                           .append("\n");
                 }
             }

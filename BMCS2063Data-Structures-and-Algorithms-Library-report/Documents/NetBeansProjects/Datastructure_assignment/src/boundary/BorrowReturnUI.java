@@ -1,10 +1,6 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package boundary;
 
-import control.*;
+import control.BorrowReturnBook;
 import entity.Book;
 import java.util.Scanner;
 
@@ -35,17 +31,23 @@ public class BorrowReturnUI {
         } while (choice != 0);
     }
 
+    public void startStaffModule() {
+        runStaffMenu();
+    }
+
+    public void startStudentModule() {
+        runStudentMenu();
+    }
+
     private int getMainMenuChoice() {
-        
-        
-        System.out.println("\n======================================");
-        System.out.println("     BORROW & RETURN BOOK MODULE");
-        System.out.println("======================================");
+        System.out.println("\n==================================================");
+        System.out.println("             BORROW & RETURN MODULE               ");
+        System.out.println("==================================================");
         System.out.println("1. Staff");
         System.out.println("2. Student");
         System.out.println("0. Exit");
+        System.out.println("--------------------------------------------------");
         System.out.print("Enter choice: ");
-
         return readInt();
     }
 
@@ -57,14 +59,13 @@ public class BorrowReturnUI {
 
             switch (choice) {
                 case 1:
-                     displayBorrowedBooks();
+                    displayBorrowedBooks();
                     break;
-                    
                 case 0:
-                    System.out.println("Back to main menu...");
+                    System.out.println("\nBack to previous menu...");
                     break;
                 default:
-                    System.out.println("Invalid choice. Please try again.");
+                    System.out.println("\nInvalid choice. Please try again.");
             }
         } while (choice != 0);
     }
@@ -83,69 +84,71 @@ public class BorrowReturnUI {
                     returnBook();
                     break;
                 case 0:
-                    System.out.println("Back to main menu...");
+                    System.out.println("\nBack to previous menu...");
                     break;
                 default:
-                    System.out.println("Invalid choice. Please try again.");
+                    System.out.println("\nInvalid choice. Please try again.");
             }
         } while (choice != 0);
     }
 
     private int getStaffMenuChoice() {
-        System.out.println("\n--------------------------------------");
-        System.out.println("              STAFF MENU");
-        System.out.println("--------------------------------------");
-        System.out.println("1. Display Borrowed Books");
+        System.out.println("\n==================================================");
+        System.out.println("                    STAFF MENU                    ");
+        System.out.println("==================================================");
+        System.out.println("1. View Borrow Records by Status");
         System.out.println("0. Back");
+        System.out.println("--------------------------------------------------");
         System.out.print("Enter choice: ");
-
         return readInt();
     }
 
     private int getStudentMenuChoice() {
-        System.out.println("\n--------------------------------------");
-        System.out.println("             STUDENT MENU");
-        System.out.println("--------------------------------------");
-        System.out.println("1. Borrow");
+        System.out.println("\n==================================================");
+        System.out.println("                   STUDENT MENU                   ");
+        System.out.println("==================================================");
+        System.out.println("1. Borrow Book");
         System.out.println("2. Return Book");
         System.out.println("0. Back");
+        System.out.println("--------------------------------------------------");
         System.out.print("Enter choice: ");
-
         return readInt();
     }
 
     private void searchBookAndBorrow() {
-        System.out.println("\n========== Borrow Book ==========");
+        System.out.println("\n==================================================");
+        System.out.println("                    BORROW BOOK                   ");
+        System.out.println("==================================================");
 
-        String uncorretstudentId = inputBorrowerId();
-        String studentId=uncorretstudentId.toUpperCase();
+        String uncorrectStudentId = inputBorrowerId();
+        String studentId = uncorrectStudentId.toUpperCase();
 
         if (!control.isValidStudentId(studentId)) {
-        System.out.println("Invalid Student ID format. Returning to menu...");
-        return; 
+            System.out.println("Invalid Student ID format. Returning to menu...");
+            return;
         }
-        
+
         String studentName = control.findStudentNameById(studentId);
 
         if (studentName == null) {
-            System.out.print("First time need enter Student Name: ");
+            System.out.print("First time user, please enter Student Name: ");
             studentName = scanner.nextLine().trim();
         }
-        
+
         String keyword = inputSearchKeyword();
 
         System.out.println("\nSearch Results:");
-        String resultbook = control.searchBook(keyword);
+        String resultBook = control.searchBook(keyword);
 
-        if (resultbook == null || resultbook.trim().isEmpty()) {
+        if (resultBook == null || resultBook.trim().isEmpty()) {
             System.out.println("No matching books found.");
             return;
         }
 
-        System.out.println(resultbook);
+        System.out.println(resultBook);
 
-        String bookIdC = inputBookId();
-        String bookId=bookIdC.toUpperCase();
+        String bookIdInput = inputBookId();
+        String bookId = bookIdInput.toUpperCase();
 
         Book book = control.findBookById(bookId);
 
@@ -154,15 +157,13 @@ public class BorrowReturnUI {
             return;
         }
 
-     
-
         if (control.checkAvailability(bookId)) {
             System.out.println("Book is available.");
             System.out.print("Proceed to borrow? (Y/N): ");
             String confirm = scanner.nextLine().trim();
 
             if (confirm.equalsIgnoreCase("Y")) {
-                int result = control.borrowBook(studentId, bookId ,studentName);
+                int result = control.borrowBook(studentId, bookId, studentName);
 
                 switch (result) {
                     case 1:
@@ -193,7 +194,7 @@ public class BorrowReturnUI {
             String joinWaitList = scanner.nextLine().trim();
 
             if (joinWaitList.equalsIgnoreCase("Y")) {
-                boolean joined = control.addToWaitingList(studentId, bookId,studentName);
+                boolean joined = control.addToWaitingList(studentId, bookId, studentName);
 
                 if (joined) {
                     System.out.println("You have been added to the waiting list.");
@@ -203,21 +204,24 @@ public class BorrowReturnUI {
             } else {
                 System.out.println("Waiting list request cancelled.");
             }
-        }}
+        }
 
-    private void returnBook(){
-        System.out.println("\n=============== RETURN BOOK ===============");
+        pause();
+    }
 
+    private void returnBook() {
+        System.out.println("\n==================================================");
+        System.out.println("                    RETURN BOOK                   ");
+        System.out.println("==================================================");
 
-        String uncorrectstudentId = inputBorrowerId();
-        String studentId = uncorrectstudentId.toUpperCase();
-        
+        String uncorrectStudentId = inputBorrowerId();
+        String studentId = uncorrectStudentId.toUpperCase();
 
         if (!control.isValidStudentId(studentId)) {
             System.out.println("Invalid Student ID format. Returning to menu...");
-            return; 
+            return;
         }
-        
+
         String records = control.getActiveBorrowRecordStringByStudent(studentId);
 
         if (records == null || records.trim().isEmpty()) {
@@ -227,67 +231,71 @@ public class BorrowReturnUI {
 
         System.out.println("\nYour Active Borrowed Records:");
         System.out.println(records);
-        
-        
-        String bookIdC = inputBookId();
-        String bookId=bookIdC.toUpperCase();
 
-        
+        String bookIdInput = inputBookId();
+        String bookId = bookIdInput.toUpperCase();
 
         boolean success = control.returnBook(studentId, bookId);
 
         if (success) {
             System.out.println("Book returned successfully.");
         } else {
-            System.out.println("Return failed. Record not found .");
+            System.out.println("Return failed. Record not found.");
         }
+
+        pause();
     }
 
     private void displayBorrowedBooks() {
-            System.out.println("\n=========== BORROWED BOOK LIST ===========");
+        System.out.println("\n==================================================");
+        System.out.println("               BORROW RECORDS STATUS              ");
+        System.out.println("==================================================");
+        System.out.println("1. BORROWED");
+        System.out.println("2. RETURNED");
+        System.out.println("3. EXPIRED");
+        System.out.println("0. Back");
+        System.out.println("--------------------------------------------------");
+        System.out.print("Enter choice: ");
 
-        
-            System.out.println("Select Status:");
-            System.out.println("1. BORROWED");
-            System.out.println("2. RETURNED");
-            System.out.println("3. EXPIRED");
-            System.out.print("Enter choice: ");
+        int choice = readInt();
 
-            int choice = readInt();
+        String status = "";
 
-            String status = "";
-
-            switch (choice) {
-                case 1:
-                    status = "BORROWED";
-                    break;
-                case 2:
-                    status = "RETURNED";
-                    break;
-                case 3:
-                    status = "EXPIRED";
-                    break;
-                default:
-                    System.out.println("Invalid choice.");
-                    return;
-            }
-
-            
-            String output = control.getRecordsByStatus(status);
-
-            if (output == null || output.trim().isEmpty()) {
-                System.out.println("No records found for status: " + status);
-            } else {
-                System.out.println("\nStatus: " + status);
-                System.out.println(output);
-            }
+        switch (choice) {
+            case 1:
+                status = "BORROWED";
+                break;
+            case 2:
+                status = "RETURNED";
+                break;
+            case 3:
+                status = "EXPIRED";
+                break;
+            case 0:
+                return;
+            default:
+                System.out.println("Invalid choice.");
+                return;
         }
+
+        String output = control.getRecordsByStatus(status);
+
+        System.out.println("\n--------------------------------------------------");
+        System.out.println("Status: " + status);
+        System.out.println("--------------------------------------------------");
+
+        if (output == null || output.trim().isEmpty()) {
+            System.out.println("No records found for status: " + status);
+        } else {
+            System.out.println(output);
+        }
+
+        pause();
+    }
 
     private String inputBorrowerId() {
         System.out.print("Enter Student ID: ");
         return scanner.nextLine().trim();
-        
-        
     }
 
     private String inputBookId() {
@@ -306,7 +314,13 @@ public class BorrowReturnUI {
             scanner.next();
         }
         int value = scanner.nextInt();
-        scanner.nextLine(); // clear buffer
+        scanner.nextLine();
         return value;
+    }
+
+    private void pause() {
+        System.out.println("--------------------------------------------------");
+        System.out.print("Press Enter to continue...");
+        scanner.nextLine();
     }
 }

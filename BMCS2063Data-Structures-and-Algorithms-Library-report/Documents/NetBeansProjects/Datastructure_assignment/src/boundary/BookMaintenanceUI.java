@@ -39,7 +39,9 @@ public class BookMaintenanceUI {
     }
     
     public int getStaffMenu(){
-        System.out.println("Staff Menu");
+        System.out.println("\n==================================================");
+        System.out.println("              Staff Maintaince             ");
+        System.out.println("==================================================");
         System.out.println("1.Add new book");
         System.out.println("2.Update book details");
         System.out.println("3.Remove book");
@@ -50,7 +52,9 @@ public class BookMaintenanceUI {
     }
     
     public int getStudentMenu(){
-        System.out.println("Student Menu");
+        System.out.println("\n==================================================");
+        System.out.println("               Books              ");
+        System.out.println("==================================================");
         System.out.println("1.Search book");
         System.out.println("2.Display all books");
         System.out.println("0.Quit");
@@ -58,7 +62,10 @@ public class BookMaintenanceUI {
     }
     
     public void listAllBooks (String outputStr){
-        System.out.println("\nList of Books : \n" + outputStr);
+         System.out.println("\n==================================================");
+        System.out.println("               List of Books             ");
+        System.out.println("==================================================\n");
+        System.out.println( outputStr);
     }
     
     public void printBookDetails(Book book){

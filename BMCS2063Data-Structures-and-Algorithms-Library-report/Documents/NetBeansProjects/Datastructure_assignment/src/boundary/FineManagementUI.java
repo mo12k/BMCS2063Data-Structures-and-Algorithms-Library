@@ -1,13 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package boundary;
-
-/**
- *
- * @author Yang
- */
 
 import control.BorrowReturnBook;
 import control.FineManagement;
@@ -44,6 +35,18 @@ public class FineManagementUI {
         } while (choice != 0);
     }
 
+    public void startStaffModule() {
+        borrowControl.refreshExpiredStatus();
+        fineControl.autoGenerateFines(borrowControl.getAllRecords());
+        runStaffMenu();
+    }
+
+    public void startStudentModule() {
+        borrowControl.refreshExpiredStatus();
+        fineControl.autoGenerateFines(borrowControl.getAllRecords());
+        runStudentMenu();
+    }
+
     private int getMainMenuChoice() {
         System.out.println("\n==================================================");
         System.out.println("               FINE MANAGEMENT MODULE             ");
@@ -67,7 +70,7 @@ public class FineManagementUI {
                     displayUnpaidFines();
                     break;
                 case 0:
-                    System.out.println("\nBack to main menu...");
+                    System.out.println("\nBack to previous menu...");
                     break;
                 default:
                     System.out.println("\nInvalid choice. Please try again.");
@@ -89,7 +92,7 @@ public class FineManagementUI {
                     payFine();
                     break;
                 case 0:
-                    System.out.println("\nBack to main menu...");
+                    System.out.println("\nBack to previous menu...");
                     break;
                 default:
                     System.out.println("\nInvalid choice. Please try again.");
@@ -98,9 +101,9 @@ public class FineManagementUI {
     }
 
     private int getStaffMenuChoice() {
-        System.out.println("\n--------------------------------------------------");
+        System.out.println("\n==================================================");
         System.out.println("                    STAFF MENU                    ");
-        System.out.println("--------------------------------------------------");
+        System.out.println("==================================================");
         System.out.println("1. View Unpaid Fines");
         System.out.println("0. Back");
         System.out.println("--------------------------------------------------");
@@ -109,9 +112,9 @@ public class FineManagementUI {
     }
 
     private int getStudentMenuChoice() {
-        System.out.println("\n--------------------------------------------------");
+        System.out.println("\n==================================================");
         System.out.println("                   STUDENT MENU                   ");
-        System.out.println("--------------------------------------------------");
+        System.out.println("==================================================");
         System.out.println("1. View My Fine History");
         System.out.println("2. Pay Fine");
         System.out.println("0. Back");
@@ -125,7 +128,8 @@ public class FineManagementUI {
         System.out.println("                  UNPAID FINES                    ");
         System.out.println("==================================================");
         System.out.printf("%-7s | %-10s | %-7s | %-8s | %-10s%n",
-        "Fine ID", "Student ID", "Book ID", "Amount", "Overdue");
+                "Fine ID", "Student ID", "Book ID", "Amount", "Overdue");
+        System.out.println("--------------------------------------------------");
 
         String result = fineControl.displayUnpaidFines();
         System.out.println(result);
@@ -156,7 +160,7 @@ public class FineManagementUI {
 
         System.out.printf("%-7s | %-8s | %-10s%n",
                 "Fine ID", "Amount", "Status");
-        
+        System.out.println("--------------------------------------------------");
 
         String result = fineControl.viewStudentFines(studentID);
         System.out.println(result);
