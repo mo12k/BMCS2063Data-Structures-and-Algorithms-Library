@@ -6,6 +6,7 @@ package control;
 
 
 import adt.*;
+import boundary.BookReservationUI;
 import dao.*;
 import entity.*;
 import java.time.LocalDate;
@@ -20,6 +21,7 @@ public class BorrowReturnBook {
     private ListInterface<BorrowRecord> borrowRecordList = new DoublyLinkedList<>();
     private BookDAO bookDAO = new BookDAO();
     private BorrowRecordDAO borrowRecordDAO = new BorrowRecordDAO();
+   
     
     
     public BorrowReturnBook() {
@@ -47,6 +49,20 @@ public class BorrowReturnBook {
         }
     
 
+        public String findStudentNameById(String studentId) {
+                for (int i = 1; i <= borrowRecordList.size(); i++) {
+                    BorrowRecord record = borrowRecordList.get(i);
+                    if (record != null
+                            && record.getBorrowerID() != null
+                            && record.getBorrowerID().equalsIgnoreCase(studentId.trim())
+                            && record.getStudentName() != null
+                            && !record.getStudentName().trim().isEmpty()) {
+                        return record.getStudentName();
+                    }
+                }
+                return null;
+            }
+    
         public boolean returnBook(String studentId, String bookId) {
             reloadData();
             if (!isValidStudentId(studentId)) {
@@ -384,11 +400,23 @@ public class BorrowReturnBook {
     
     
 
+    private BookReservation reservationControl;
+
+    public BorrowReturnBook(BookReservation reservationControl) {
+        this.reservationControl = reservationControl;
+        bookList = bookDAO.retrieveFromFile();
+        borrowRecordList = borrowRecordDAO.retrieveFromFile();
+    }
+
     public boolean addToWaitingList(String studentId, String bookId) {
-        //LAMZHANFENG
-        System.out.println("Passing waiting list request to teammate module...");
-        System.out.println("Student ID: " + studentId + ", Book ID: " + bookId);
-        return true;
+        if (reservationControl == null) {
+            System.out.println("Reservation module is not available.");
+            return false;
+        }
+
+        String success = reservationControl.reserveBook(studentId, bookId);
+
+   return true;
     }
     
     

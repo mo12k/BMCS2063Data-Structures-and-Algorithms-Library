@@ -17,6 +17,7 @@ public class BorrowRecord implements Serializable {
     LocalDate setExDate =setDate.plusDays(31);
     private String recordID;
     private String studentID;
+    private String studentName;
     private String bookID;
     private String borrowDate;
     private String returnDate;
@@ -111,12 +112,21 @@ public class BorrowRecord implements Serializable {
     public void setStatus(String status) {
         this.status = status;
     }
+    
+     public String getStudentName() {
+        return studentName;
+    }
+
+    public void setStudentName(String studentName) {
+        this.studentName = studentName;
+    }
 
     @Override
     public String toString() {
-        return String.format("%s | Student: %s | Book: %s | Borrow Date: %s | Return Date: %s | Expiry Date: %s | Status: %s  ",
+        return String.format("%s | Student: %s | StudentName: %s | Book: %s | Borrow Date: %s | Return Date: %s | Expiry Date: %s | Status: %s  ",
                 recordID,
                 studentID,
+                studentName,
                 bookID,
                 borrowDate,
                 returnDate == null ? "-" : returnDate,

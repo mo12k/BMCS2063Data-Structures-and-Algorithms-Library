@@ -125,6 +125,13 @@ public class BorrowReturnUI {
         return; 
         }
         
+        String studentName = control.findStudentNameById(studentId);
+
+        if (studentName == null) {
+            System.out.print("First time need enter Student Name: ");
+            studentName = scanner.nextLine().trim();
+        }
+        
         String keyword = inputSearchKeyword();
 
         System.out.println("\nSearch Results:");

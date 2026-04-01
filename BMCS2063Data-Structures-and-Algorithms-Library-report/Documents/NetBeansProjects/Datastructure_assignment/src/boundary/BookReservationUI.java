@@ -31,7 +31,7 @@ public class BookReservationUI {
             choice = getChoice();
 
             switch (choice) {
-                case 1 -> reserveBook();
+                case 1 -> reserveBook(null,null);
                 case 2 -> cancelReservation();
                 case 3 -> viewWaitingList();
                 case 4 -> notifyNextStudent();
@@ -60,16 +60,21 @@ public class BookReservationUI {
         return scanner.nextInt();
     }
 
-    private void reserveBook() {
+    private void reserveBook(String studentID,String bookID) {
+        
+        if(studentID ==null ||bookID ==null){
         scanner.nextLine();
         System.out.print("Enter Student ID: ");
-        String studentID = scanner.nextLine();
+        studentID = scanner.nextLine();
 
         System.out.print("Enter Book ID: ");
-        String bookID = scanner.nextLine();
+        bookID = scanner.nextLine();
 
         String result = reservationControl.reserveBook(studentID, bookID);
-        System.out.println(result);
+        System.out.println(result);}
+        else {
+        String result2 = reservationControl.reserveBook(studentID, bookID);
+        System.out.println(result2);}
     }
 
     private void cancelReservation() {
