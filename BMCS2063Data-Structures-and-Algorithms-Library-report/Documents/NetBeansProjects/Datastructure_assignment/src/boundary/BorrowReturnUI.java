@@ -162,7 +162,7 @@ public class BorrowReturnUI {
             String confirm = scanner.nextLine().trim();
 
             if (confirm.equalsIgnoreCase("Y")) {
-                int result = control.borrowBook(studentId, bookId);
+                int result = control.borrowBook(studentId, bookId ,studentName);
 
                 switch (result) {
                     case 1:
@@ -193,7 +193,7 @@ public class BorrowReturnUI {
             String joinWaitList = scanner.nextLine().trim();
 
             if (joinWaitList.equalsIgnoreCase("Y")) {
-                boolean joined = control.addToWaitingList(studentId, bookId);
+                boolean joined = control.addToWaitingList(studentId, bookId,studentName);
 
                 if (joined) {
                     System.out.println("You have been added to the waiting list.");

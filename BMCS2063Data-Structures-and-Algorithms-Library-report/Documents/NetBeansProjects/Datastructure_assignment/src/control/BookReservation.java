@@ -108,7 +108,7 @@ public class BookReservation {
         return today.toString();
     }
     
-    public String reserveBook(String studentID, String bookID) {
+    public String reserveBook(String studentID, String bookID ,String studentName) {
         Student student = findStudentById(studentID);
         if (student == null) {
             return "Reservation failed. This student does not exist.";

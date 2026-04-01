@@ -28,21 +28,23 @@ public class BorrowRecord implements Serializable {
 
  
 
-    public BorrowRecord(String borrowerID, String bookID) {
+    public BorrowRecord(String borrowerID, String bookID,String studentName) {
         
         this.recordID = generateRecordID();
         this.studentID = borrowerID;
         this.bookID = bookID;
+        this.studentName=studentName;
         this.borrowDate =setDate.toString();
         this.returnDate = null;
         this.expiryDate = setExDate.toString();
         this.status = "BORROWED";
     }
     
-    public BorrowRecord(String borrowerID, String bookID , String borrowDate, String returnDate, String expiryDate, String status) {
+    public BorrowRecord(String borrowerID, String studentName ,String bookID, String borrowDate, String returnDate, String expiryDate, String status) {
         this.recordID = generateRecordID();
         this.studentID = borrowerID;
         this.bookID = bookID;
+        this.studentName=studentName;
         this.borrowDate =borrowDate;
         this.returnDate = returnDate;
         this.expiryDate = expiryDate;
@@ -113,11 +115,11 @@ public class BorrowRecord implements Serializable {
         this.status = status;
     }
     
-     public String getStudentName() {
+     public String getBorrowName() {
         return studentName;
     }
 
-    public void setStudentName(String studentName) {
+    public void setBorrowName(String studentName) {
         this.studentName = studentName;
     }
 

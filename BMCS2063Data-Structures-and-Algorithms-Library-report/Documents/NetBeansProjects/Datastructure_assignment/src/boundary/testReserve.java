@@ -30,11 +30,11 @@ public class testReserve {
         reservationControl.getBookList().add(b4);
 
         // Manually add students
-        Student s1 = new Student("S001", "Alice");
-        Student s2 = new Student("S002", "Ben");
-        Student s3 = new Student("S003", "Chloe");
-        Student s4 = new Student("S004", "Daniel");
-        Student s5 = new Student("S005", "Emily");
+        Student s1 = new Student("ST001", "Alice");
+        Student s2 = new Student("ST002", "Ben");
+        Student s3 = new Student("ST003", "Chloe");
+        Student s4 = new Student("ST004", "Daniel");
+        Student s5 = new Student("ST005", "Emily");
 
         reservationControl.getStudentList().add(s1);
         reservationControl.getStudentList().add(s2);
@@ -43,9 +43,10 @@ public class testReserve {
         reservationControl.getStudentList().add(s5);
 
         // Optional preloaded reservations for testing waiting list flow
-        reservationControl.reserveBook("S001", b1.getBookID());
-        reservationControl.reserveBook("S002", b1.getBookID());
-        reservationControl.reserveBook("S003", b3.getBookID());
+        //jia name
+        reservationControl.reserveBook("ST001", b1.getBookID(),s1.getStudentName());
+        reservationControl.reserveBook("ST002", b1.getBookID(),s1.getStudentName());
+        reservationControl.reserveBook("ST003", b3.getBookID(),s1.getStudentName());
 
         // Launch UI
         BookReservationUI ui = new BookReservationUI(reservationControl);

@@ -50,14 +50,15 @@ public class BorrowReturnBook {
     
 
         public String findStudentNameById(String studentId) {
+             reloadData();
                 for (int i = 1; i <= borrowRecordList.size(); i++) {
                     BorrowRecord record = borrowRecordList.get(i);
                     if (record != null
                             && record.getBorrowerID() != null
                             && record.getBorrowerID().equalsIgnoreCase(studentId.trim())
-                            && record.getStudentName() != null
-                            && !record.getStudentName().trim().isEmpty()) {
-                        return record.getStudentName();
+                            && record.getBorrowName()!= null
+                            && !record.getBorrowName().trim().isEmpty()) {
+                        return record.getBorrowName();
                     }
                 }
                 return null;
@@ -114,7 +115,7 @@ public class BorrowReturnBook {
     }
 
 
-       public int borrowBook(String studentId, String bookId) {
+       public int borrowBook(String studentId, String bookId, String studentName) {
 
                 reloadData(); 
 
@@ -140,7 +141,7 @@ public class BorrowReturnBook {
                 book.setQuantity(book.getQuantity() - 1);
                 book.setIsAvailable(book.getQuantity() > 0);
 
-                BorrowRecord newRecord = new BorrowRecord(studentId, bookId);
+                BorrowRecord newRecord = new BorrowRecord(studentId, bookId, studentName);
                 borrowRecordList.add(newRecord);
 
                 bookDAO.saveToFile(bookList);
@@ -196,6 +197,7 @@ public class BorrowReturnBook {
                     output.append("Book ID: ").append(record.getBookID())
                           .append(" | Book Name: ").append(bookName)
                           .append(" | Student: ").append(record.getBorrowerID())
+                          .append(" | Student Name: ").append(record.getBorrowName())
                           .append(" | Borrow Date: ").append(record.getBorrowDate())
                           .append(" | Return Date: ").append(record.getReturnDate() == null ? "-" : record.getReturnDate())
                           .append(" | Status: ").append(record.getStatus())
@@ -299,56 +301,72 @@ public class BorrowReturnBook {
     public void initializeSampleRecord() {
     LocalDate today = LocalDate.now();
 
-             
-                for (int i = 1; i <= 3; i++) {
-                    LocalDate borrow = today.minusDays(5 + i); 
-                    LocalDate expiry = borrow.plusDays(31);
 
-                    BorrowRecord r = new BorrowRecord(
-                            "ST00" + i,
-                            "B000" + i,
-                            borrow.toString(),
+                    borrowRecordList.add(new BorrowRecord(
+                            "ST001", "Alice Tan", "B0001",
+                            today.minusDays(6).toString(),
                             null,
-                            expiry.toString(),
+                            today.minusDays(6).plusDays(31).toString(),
                             "BORROWED"
-                    );
+                    ));
 
-                    borrowRecordList.add(r);
-                }
-
-                for (int i = 4; i <= 6; i++) {
-                    LocalDate borrow = today.minusDays(40 + i); // 很久前借
-                    LocalDate expiry = borrow.plusDays(31);
-
-                    BorrowRecord r = new BorrowRecord(
-                            "ST00" + i,
-                            "B000" + i,
-                            borrow.toString(),
+                    borrowRecordList.add(new BorrowRecord(
+                            "ST002", "Ben Lim", "B0002",
+                            today.minusDays(7).toString(),
                             null,
-                            expiry.toString(),
+                            today.minusDays(7).plusDays(31).toString(),
+                            "BORROWED"
+                    ));
+
+                    borrowRecordList.add(new BorrowRecord(
+                            "ST003", "Chloe Wong", "B0003",
+                            today.minusDays(8).toString(),
+                            null,
+                            today.minusDays(8).plusDays(31).toString(),
+                            "BORROWED"
+                    ));
+
+                    // EXPIRED
+                    borrowRecordList.add(new BorrowRecord(
+                            "ST004", "Daniel Lee", "B0004",
+                            today.minusDays(45).toString(),
+                            null,
+                            today.minusDays(45).plusDays(31).toString(),
                             "EXPIRED"
-                    );
+                    ));
 
-                    borrowRecordList.add(r);
-                }
+                    borrowRecordList.add(new BorrowRecord(
+                            "ST005", "Emily Ng", "B0005",
+                            today.minusDays(50).toString(),
+                            null,
+                            today.minusDays(50).plusDays(31).toString(),
+                            "EXPIRED"
+                    ));
 
-                for (int i = 7; i <= 8; i++) {
-                    LocalDate borrow = today.minusDays(20 + i);
-                    LocalDate returnDate = today.minusDays(10 + i);
-                    LocalDate expiry = borrow.plusDays(31);
+                    borrowRecordList.add(new BorrowRecord(
+                            "ST006", "Farah Ahmad", "B0006",
+                            today.minusDays(55).toString(),
+                            null,
+                            today.minusDays(55).plusDays(31).toString(),
+                            "EXPIRED"
+                    ));
 
-                    BorrowRecord r = new BorrowRecord(
-                            "ST00" + i,
-                            "B000" + i,
-                            borrow.toString(),
-                            returnDate.toString(),
-                            expiry.toString(),
+                    // RETURNED
+                    borrowRecordList.add(new BorrowRecord(
+                            "ST007", "Gary Chong", "B0007",
+                            today.minusDays(25).toString(),
+                            today.minusDays(10).toString(),
+                            today.minusDays(25).plusDays(31).toString(),
                             "RETURNED"
-                    );
+                    ));
 
-                    borrowRecordList.add(r);
-                }
-
+                    borrowRecordList.add(new BorrowRecord(
+                            "ST008", "Hannah Ong", "B0008",
+                            today.minusDays(30).toString(),
+                            today.minusDays(12).toString(),
+                            today.minusDays(30).plusDays(31).toString(),
+                            "RETURNED"
+                    ));
                 borrowRecordDAO.saveToFile(borrowRecordList);
             }
     
@@ -384,11 +402,12 @@ public class BorrowReturnBook {
     public String formatBorrowRecord(BorrowRecord record) {
     Book book = findBookById(record.getBookID());
 
-    String bookName = (book == null) ? "Unknown" : book.getTitle();
+    String bookName =  book.getTitle();
 
-    return String.format("%s | Student: %s | Book: %s (%s) | Borrow Date: %s | Return Date: %s | Expiry Date: %s | Status: %s",
+    return String.format("%s | Student: %s | StudentName: %s (%s) | Book: %s (%s) | Borrow Date: %s | Return Date: %s | Expiry Date: %s | Status: %s",
             record.getRecordID(),
             record.getBorrowerID(),
+            record.getBorrowName(),
             bookName,
             record.getBookID(),
             record.getBorrowDate(),
@@ -408,14 +427,14 @@ public class BorrowReturnBook {
         borrowRecordList = borrowRecordDAO.retrieveFromFile();
     }
 
-    public boolean addToWaitingList(String studentId, String bookId) {
+    public boolean addToWaitingList(String studentId, String bookId,String studentName) {
         if (reservationControl == null) {
             System.out.println("Reservation module is not available.");
             return false;
         }
-
-        String success = reservationControl.reserveBook(studentId, bookId);
-
+        else{
+        reservationControl.reserveBook(studentId , bookId, studentName);
+        }
    return true;
     }
     
