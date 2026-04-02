@@ -293,7 +293,12 @@ public class BookMaintenance {
     }
     
     public void displayBooks(){
+        reloadData();
         bookUI.listAllBooks(getAllBooks());
+    }
+    
+    private void reloadData() {
+    bookList = bookDAO.retrieveFromFile();
     }
     
     public static void main(String[] args){
