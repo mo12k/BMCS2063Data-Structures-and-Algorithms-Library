@@ -122,6 +122,19 @@ public class BorrowRecord implements Serializable {
     public void setBorrowName(String studentName) {
         this.studentName = studentName;
     }
+    
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+
+        BorrowRecord other = (BorrowRecord) obj;
+
+        return this.getBorrowerID().equalsIgnoreCase(other.getBorrowerID())
+                && this.getBookID().equalsIgnoreCase(other.getBookID())
+                && this.getStatus().equalsIgnoreCase(other.getStatus());
+    }
 
     @Override
     public String toString() {

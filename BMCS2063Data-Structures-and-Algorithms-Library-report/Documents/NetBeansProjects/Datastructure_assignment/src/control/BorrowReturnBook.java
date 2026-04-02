@@ -71,15 +71,35 @@ public class BorrowReturnBook {
                 return false;
             }
 
-            BorrowRecord record = findActiveBorrowRecord(studentId, bookId);
-            Book book = findBookById(bookId);
+                    BorrowRecord probe = new BorrowRecord(
+                    studentId,
+                    "",
+                    bookId,
+                    "",
+                    null,
+                    "",
+                    "BORROWED"
+            );
 
-            if (record == null || book == null) {
+
+            int pos = borrowRecordList.indexOf(probe);
+
+            if (pos == -1) {
                 return false;
             }
 
+            BorrowRecord record = borrowRecordList.get(pos);
+
+          
             record.setReturnDate(LocalDate.now().toString());
             record.setStatus("RETURNED");
+        
+           borrowRecordList.set(pos, record);
+            Book book = findBookById(bookId);
+
+            if ( book == null) {
+                return false;
+            }          
 
             book.setQuantity(book.getQuantity() + 1);
             book.setIsAvailable(true);
@@ -117,8 +137,9 @@ public class BorrowReturnBook {
 
 
        public int borrowBook(String studentId, String bookId, String studentName) {
-
+                
                 reloadData(); 
+               
 
                 if (!isValidStudentId(studentId)) {
                     return -1; 
@@ -131,7 +152,7 @@ public class BorrowReturnBook {
                 }
 
         
-                if (findActiveBorrowRecord(studentId, bookId) != null) {
+                if (hasUnreturnedSameBook(studentId, bookId)){
                     return -3; 
                 }
 
@@ -277,7 +298,7 @@ public class BorrowReturnBook {
     public boolean isValidStudentId(String studentId) {
     return studentId != null && studentId.matches("ST\\d{3,}");
 }
-    //Yang
+    //YangMEIZUOOODOAODOADOAOSO
     public BorrowRecord findBorrowRecordForFine(String studentId, String bookId) {
     for (int i = 1; i <= borrowRecordList.size(); i++) {
         BorrowRecord record = borrowRecordList.get(i);
@@ -404,7 +425,7 @@ public class BorrowReturnBook {
 
     String bookName =  book.getTitle();
 
-    return String.format("%s | Student: %s | StudentName: %s (%s) | Book: %s (%s) | Borrow Date: %s | Return Date: %s | Expiry Date: %s | Status: %s",
+    return String.format("%s | Student: %s | StudentName: %s  | Book: %s | Book Name: %s | Borrow Date: %s | Return Date: %s | Expiry Date: %s | Status: %s",
             record.getRecordID(),
             record.getBorrowerID(),
             record.getBorrowName(),
@@ -416,6 +437,32 @@ public class BorrowReturnBook {
             record.getStatus());
 }
     
+    
+    
+    private boolean hasUnreturnedSameBook(String studentId, String bookId) {
+            BorrowRecord borrowedProbe = new BorrowRecord(
+                    studentId,
+                    "",
+                    bookId,
+                    "",
+                    null,
+                    "",
+                    "BORROWED"
+            );
+
+            BorrowRecord expiredProbe = new BorrowRecord(
+                    studentId,
+                    "",
+                    bookId,
+                    "",
+                    null,
+                    "",
+                    "EXPIRED"
+            );
+
+            return borrowRecordList.contains(borrowedProbe)
+                    || borrowRecordList.contains(expiredProbe);
+    }
 
     public BorrowReturnBook(BookReservation reservationControl) {
         this.reservationControl = reservationControl;
