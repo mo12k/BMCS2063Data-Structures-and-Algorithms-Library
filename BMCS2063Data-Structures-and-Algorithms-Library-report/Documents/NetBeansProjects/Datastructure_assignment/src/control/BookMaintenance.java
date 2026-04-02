@@ -301,8 +301,5 @@ public class BookMaintenance {
     bookList = bookDAO.retrieveFromFile();
     }
     
-    public static void main(String[] args){
-        BookMaintenance bookMaintenance = new BookMaintenance();
-        bookMaintenance.startRunLibrary();
-    }
+ 
 }

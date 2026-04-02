@@ -21,6 +21,7 @@ public class BorrowReturnBook {
     private ListInterface<BorrowRecord> borrowRecordList = new DoublyLinkedList<>();
     private BookDAO bookDAO = new BookDAO();
     private BorrowRecordDAO borrowRecordDAO = new BorrowRecordDAO();
+    private BookReservation reservationControl;
    
     
     
@@ -415,10 +416,6 @@ public class BorrowReturnBook {
             record.getStatus());
 }
     
-    
-    
-
-    private BookReservation reservationControl;
 
     public BorrowReturnBook(BookReservation reservationControl) {
         this.reservationControl = reservationControl;
