@@ -101,11 +101,10 @@ public class BookMaintenance {
                     removeBook();
                 }
                 case 4 -> {
-                    System.out.print("Enter Book (ID/Title/Author) to search: ");
                     String searchName = bookUI.getSearchInput();
                     ListInterface<Book> results = searchBook(searchName);
                     if (results.isEmpty()) {
-                        System.out.println("No matching books found.");
+                        bookUI.displayMessage("No matching books found.");
                     } else {
                         bookUI.listAllBooks(formatBooksForDisplay(results));
                     }
@@ -124,11 +123,10 @@ public class BookMaintenance {
             switch (choice) {
                 case 0 -> MessageUI.displayExitMessage();
                 case 1 -> {
-                    System.out.print("Enter Book (ID/Title/Author) to search: ");
                     String searchName = bookUI.getSearchInput();
                     ListInterface<Book> results = searchBook(searchName);
                     if (results.isEmpty()) {
-                        System.out.println("No matching books found.");
+                        bookUI.displayMessage("No matching books found.");
                     } else {
                         bookUI.listAllBooks(formatBooksForDisplay(results));
                     }
@@ -165,14 +163,14 @@ public class BookMaintenance {
         Book newBook = bookUI.inputBookDetails();
 
         if (bookList.contains(newBook)) {
-            System.out.println("Book already exists in the system.");
+            bookUI.displayMessage("Book already exists in the system.");
             return;
         }
 
         bookList.add(newBook);
         bookDAO.saveToFile(bookList);
 
-        System.out.println("Book added successfully.");
+        bookUI.displayMessage("Book added successfully.");
     }
 
     private void updateBookDetails() {
@@ -180,7 +178,7 @@ public class BookMaintenance {
         String bookId = bookUI.inputBookId();
         int position = findBookPositionById(bookId);
         if (position == -1) {
-            System.out.println("Book not found.");
+            bookUI.displayMessage("Book not found.");
             return;
         }
 
@@ -206,7 +204,7 @@ public class BookMaintenance {
 
         bookList.set(position, book);
         bookDAO.saveToFile(bookList);
-        System.out.println("Book updated.");
+        bookUI.displayMessage("Book updated.");
     }
 
     private void removeBook() {
@@ -214,13 +212,13 @@ public class BookMaintenance {
         String bookId = bookUI.inputBookId();
         int position = findBookPositionById(bookId);
         if (position == -1) {
-            System.out.println("Book not found.");
+            bookUI.displayMessage("Book not found.");
             return;
         }
 
         Book book = bookList.get(position);
         if (book != null && hasActiveBorrowRecord(book.getBookID())) {
-            System.out.println("Cannot remove book. This book is currently borrowed by a student.");
+            bookUI.displayMessage("Cannot remove book. This book is currently borrowed by a student.");
             return;
         }
 
@@ -231,7 +229,7 @@ public class BookMaintenance {
 
         bookList.remove(book);
         bookDAO.saveToFile(bookList);
-        System.out.println("Book removed.");
+        bookUI.displayMessage("Book removed.");
     }
 
     private int findBookPositionById(String bookId) {

@@ -10,6 +10,7 @@ import boundary.BookReservationUI;
 import dao.*;
 import entity.*;
 import java.time.LocalDate;
+import utility.MessageUI;
 
 
 /**
@@ -449,13 +450,21 @@ public class BorrowReturnBook {
 
     public boolean addToWaitingList(String studentId, String bookId,String studentName) {
         if (reservationControl == null) {
-            System.out.println("Reservation module is not available.");
+            MessageUI.displayMessage("Reservation module is not available.");
             return false;
         }
+<<<<<<< Updated upstream
         else{
         reservationControl.reserveBook(studentId , bookId, studentName);
         }
    return true;
+=======
+
+        String result = reservationControl.reserveBook(studentId, bookId, studentName);
+        MessageUI.displayMessage(result);
+
+        return result.toLowerCase().contains("successful");
+>>>>>>> Stashed changes
     }
     
     

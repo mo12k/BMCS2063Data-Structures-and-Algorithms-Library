@@ -92,7 +92,12 @@ public class BookMaintenanceUI {
     }
 
     public String getSearchInput() {
+        System.out.print("Enter Book (ID/Title/Author) to search: ");
         return scan.nextLine();
+    }
+
+    public void displayMessage(String message) {
+        System.out.println(message);
     }
     
     public String inputBookName(){
