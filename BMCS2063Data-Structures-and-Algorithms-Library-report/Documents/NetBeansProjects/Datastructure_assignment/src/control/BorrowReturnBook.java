@@ -17,6 +17,18 @@ import java.time.LocalDate;
  * @author user
  */
 public class BorrowReturnBook {
+
+    private static final int TITLE_COL_WIDTH = 45;
+    private static final int AUTHOR_COL_WIDTH = 20;
+    private static final int CATEGORY_COL_WIDTH = 20;
+    private static final int RECORD_ID_COL_WIDTH = 8;
+    private static final int STUDENT_ID_COL_WIDTH = 10;
+    private static final int STUDENT_NAME_COL_WIDTH = 18;
+    private static final int BOOK_ID_COL_WIDTH = 8;
+    private static final int BOOK_NAME_COL_WIDTH = 28;
+    private static final int DATE_COL_WIDTH = 12;
+    private static final int STATUS_COL_WIDTH = 10;
+
     private ListInterface<Book> bookList = new DoublyLinkedList<>();
     private ListInterface<BorrowRecord> borrowRecordList = new DoublyLinkedList<>();
     private BookDAO bookDAO = new BookDAO();
@@ -207,31 +219,40 @@ public class BorrowReturnBook {
             return output.toString();
         }
         
-    public String searchBook(String keyword) {
-        reloadData();
-        StringBuilder output = new StringBuilder();
+         public String searchBook(String keyword) {
+            reloadData();
 
-        if (keyword == null) keyword = "";
+            ListInterface<Book> matchedBooks = new DoublyLinkedList<>();
 
-        for (int i = 1; i <= bookList.size(); i++) {
-            Book book = bookList.get(i);
+            if (keyword == null) {
+                keyword = "";
+            }
 
-            if (book != null) {
-                String title = book.getTitle() == null ? "" : book.getTitle();
-                String author = book.getAuthor() == null ? "" : book.getAuthor();
-                String category = book.getCategory() == null ? "" : book.getCategory();
+            String searchKey = keyword.trim().toLowerCase();
 
-                if (title.toLowerCase().contains(keyword.toLowerCase())
-                        || author.toLowerCase().contains(keyword.toLowerCase())
-                        || category.toLowerCase().contains(keyword.toLowerCase())) {
+            for (int i = 1; i <= bookList.size(); i++) {
+                Book book = bookList.get(i);
 
-                    output.append(book).append("\n");
+                if (book == null) {
+                    continue;
+                }
+
+                String id = safe(book.getBookID()).toLowerCase();
+                String title = safe(book.getTitle()).toLowerCase();
+                String author = safe(book.getAuthor()).toLowerCase();
+                String category = safe(book.getCategory()).toLowerCase();
+
+                if (searchKey.isEmpty()
+                        || id.contains(searchKey)
+                        || title.contains(searchKey)
+                        || author.contains(searchKey)
+                        || category.contains(searchKey)) {
+                    matchedBooks.add(book);
                 }
             }
-        }
 
-        return output.toString();
-    }
+            return formatBooksForDisplay(matchedBooks);
+        }
         
     public ListInterface<BorrowRecord> getAllRecords() {
         return borrowRecordList;
@@ -443,5 +464,114 @@ public class BorrowReturnBook {
     borrowRecordList = borrowRecordDAO.retrieveFromFile();
 }
     
+
+    // Author: lamzh
+    public void setReservationControl(BookReservation reservationControl) {
+        this.reservationControl = reservationControl;
+    }
+
+    public boolean isReservationModuleAvailable() {
+        return reservationControl != null;
+    }
+
+    public String searchBookForWaitingList(String keyword) {
+        reloadData();
+        return searchBook(keyword);
+    }
+
+    public String viewWaitingList(String bookId) {
+        if (reservationControl == null) {
+            return "Reservation module is not available.";
+        }
+        return reservationControl.viewWaitingList(bookId);
+    }
+    
+    private String formatBorrowRecordsForDisplay(ListInterface<BorrowRecord> records) {
+            if (records == null || records.isEmpty()) {
+                return "No borrow records found.";
+            }
+
+            String header = String.format(
+                    "%-" + RECORD_ID_COL_WIDTH + "s | %-" + STUDENT_ID_COL_WIDTH + "s | %-" + STUDENT_NAME_COL_WIDTH + "s | %-" + BOOK_ID_COL_WIDTH + "s | %-" + BOOK_NAME_COL_WIDTH + "s | %-" + DATE_COL_WIDTH + "s | %-" + DATE_COL_WIDTH + "s | %-" + DATE_COL_WIDTH + "s | %-" + STATUS_COL_WIDTH + "s",
+                    "RecordID", "StudentID", "Student Name", "BookID", "Book Name",
+                    "Borrow Date", "Return Date", "Expiry Date", "Status"
+            );
+
+            String line = "-".repeat(header.length());
+            StringBuilder output = new StringBuilder();
+
+            output.append(header).append("\n");
+            output.append(line).append("\n");
+
+            for (int i = 1; i <= records.size(); i++) {
+                BorrowRecord record = records.get(i);
+                if (record == null) {
+                    continue;
+                }
+
+                Book book = findBookById(record.getBookID());
+                String bookName = (book == null) ? "Unknown" : book.getTitle();
+
+                output.append(String.format(
+                        "%-" + RECORD_ID_COL_WIDTH + "s | %-" + STUDENT_ID_COL_WIDTH + "s | %-" + STUDENT_NAME_COL_WIDTH + "s | %-" + BOOK_ID_COL_WIDTH + "s | %-" + BOOK_NAME_COL_WIDTH + "s | %-" + DATE_COL_WIDTH + "s | %-" + DATE_COL_WIDTH + "s | %-" + DATE_COL_WIDTH + "s | %-" + STATUS_COL_WIDTH + "s",
+                        safe(record.getRecordID()),
+                        safe(record.getBorrowerID()),
+                        safe(record.getBorrowName()),
+                        safe(record.getBookID()),
+                        safe(bookName),
+                        safe(record.getBorrowDate()),
+                        safe(record.getReturnDate() == null ? "-" : record.getReturnDate()),
+                        safe(record.getExpiryDate()),
+                        safe(record.getStatus())
+                ));
+                output.append("\n");
+            }
+
+            return output.toString();
+        }
+    
+    private String safe(String text) {
+            return text == null ? "" : text;
+        }
+    
+    private String formatBooksForDisplay(ListInterface<Book> books) {
+    if (books == null || books.isEmpty()) {
+        return "No books found.";
+    }
+
+    String header = String.format(
+            "%-6s | %-" + TITLE_COL_WIDTH + "s | %-" + AUTHOR_COL_WIDTH + "s | %-" + CATEGORY_COL_WIDTH + "s | %-4s | %-3s | %-9s | %-7s",
+            "BookID", "Title", "Author", "Category", "Year", "Qty", "Available", "Waiting"
+    );
+
+    String line = "-".repeat(header.length());
+    StringBuilder output = new StringBuilder();
+
+    output.append(header).append("\n");
+    output.append(line).append("\n");
+
+    for (int i = 1; i <= books.size(); i++) {
+        Book book = books.get(i);
+        if (book == null) {
+            continue;
+        }
+
+        output.append(String.format(
+                "%-6s | %-" + TITLE_COL_WIDTH + "s | %-" + AUTHOR_COL_WIDTH + "s | %-" + CATEGORY_COL_WIDTH + "s | %-4d | %-3d | %-9s | %-7d",
+                safe(book.getBookID()),
+                safe(book.getTitle()),
+                safe(book.getAuthor()),
+                safe(book.getCategory()),
+                book.getYearPublished(),
+                book.getQuantity(),
+                book.isIsAvailable() ? "Yes" : "No",
+                book.getWaitingListCount()
+        ));
+        output.append("\n");
+    }
+
+    return output.toString();
+}
+
 
 }
