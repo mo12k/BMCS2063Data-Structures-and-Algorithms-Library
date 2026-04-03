@@ -9,9 +9,9 @@ package boundary;
  * @author Yang
  */
 
-
 import control.ReportManagement;
 import java.util.Scanner;
+import utility.UITools;
 
 public class ReportUI {
 
@@ -23,11 +23,17 @@ public class ReportUI {
 
         do {
             showMainHeader();
-            choice = readInt();
+            choice = UITools.readInt();
 
             switch (choice) {
                 case 1:
                     showMostBorrowedBooksReport();
+                    break;
+                case 2:
+                    showMostActiveBorrowersReport();
+                    break;
+                case 3:
+                    showMostUnpaidFineReport();
                     break;
                 case 0:
                     System.out.println("\nExiting Report Module...");
@@ -43,26 +49,57 @@ public class ReportUI {
         System.out.println("\n==================================================");
         System.out.println("                  LIBRARY REPORT MODULE           ");
         System.out.println("==================================================");
-        System.out.println("1. Most Borrowed Books Report");
+        System.out.println("1. Top 5 Borrowed Books Report");
+        System.out.println("2. Top 5 Active Borrowers Report");
+        System.out.println("1. Top 5 Unpaid fine Borrowers Report");
         System.out.println("0. Exit");
         System.out.println("--------------------------------------------------");
         System.out.print("Enter choice: ");
     }
 
     private void showMostBorrowedBooksReport() {
-        System.out.println("\n==================================================");
-        System.out.println("             MOST BORROWED BOOKS REPORT           ");
-        System.out.println("==================================================");
-        System.out.println("Book(s) with the highest borrowing frequency");
-        System.out.println("--------------------------------------------------");
+        System.out.println("\n===================================================================");
+        System.out.println("             TOP 5 BORROWED BOOKS REPORT           ");
+        System.out.println("===================================================================");
+        System.out.println("-------------------------------------------------------------------");
         System.out.printf("%-10s %-30s %-15s%n",
                 "Book ID", "Book Title", "Borrow Count");
-        System.out.println("--------------------------------------------------");
+        System.out.println("-------------------------------------------------------------------");
 
-        String result = reportControl.getMostBorrowedBooksReport();
+        String result = reportControl.getTop5MostBorrowedBooksReport();
         System.out.println(result);
 
-        pressEnterToContinue();
+        UITools.pressEnterToContinue();
+    }
+    
+    private void showMostActiveBorrowersReport() {
+        System.out.println("\n===================================================================");
+        System.out.println("           TOP 5 ACTIVE BORROWERS REPORT             ");
+        System.out.println("===================================================================");
+        System.out.println("-------------------------------------------------------------------");
+        System.out.printf("%-10s %-30s %-15s%n",
+                "Book ID", "Book Title", "Borrow Count");
+        System.out.println("-------------------------------------------------------------------");
+
+        String result = reportControl.getTop5MostActiveBorrowersReport();
+        System.out.println(result);
+
+        UITools.pressEnterToContinue();
+    }
+    
+    private void showMostUnpaidFineReport() {
+        System.out.println("\n===================================================================");
+        System.out.println("        TOP 5 UNPAID FINE BORROWERS REPORT        ");
+        System.out.println("===================================================================");
+        System.out.println("-------------------------------------------------------------------");
+        System.out.printf("%-10s %-30s %-15s%n",
+                "Book ID", "Book Title", "Borrow Count");
+        System.out.println("-------------------------------------------------------------------");
+
+        String result = reportControl.getTop5MostUnpaidFineBorrowersReport();
+        System.out.println(result);
+
+        UITools.pressEnterToContinue();
     }
 
     private int readInt() {

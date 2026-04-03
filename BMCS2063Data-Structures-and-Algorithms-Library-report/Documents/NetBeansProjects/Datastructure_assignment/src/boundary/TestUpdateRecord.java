@@ -15,7 +15,7 @@ public class TestUpdateRecord {
 
             if (record != null
                     && record.getBorrowerID().equalsIgnoreCase("ST004")
-                    && record.getBookID().equalsIgnoreCase("B0002")) {
+                    && record.getBookID().equalsIgnoreCase("B0001")) {
 
                 
                 record.setBorrowDate("2026-02-01");

@@ -117,9 +117,8 @@ public class FineManagement {
                     && f.getBorrowRecord() != null
                     && f.getBorrowRecord().getBorrowerID().equalsIgnoreCase(studentID)) {
 
-                output += String.format("%-7s | %-7s | %-8s | %-6s%n",
+                output += String.format("%-7s | %-8s | %-6s%n",
                         f.getFineID(),
-                        f.getBorrowRecord().getBorrowerID(),
                         "RM " + String.format("%.2f", f.getAmount()),
                         f.getStatus());
             }

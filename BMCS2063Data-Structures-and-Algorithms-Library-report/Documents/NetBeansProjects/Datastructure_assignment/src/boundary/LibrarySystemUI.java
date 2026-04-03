@@ -28,7 +28,7 @@ public class LibrarySystemUI {
                 case 2:
                     runStudentPortal();
                     break;
-                case 0:
+                case 3:
                     System.out.println("\nExiting Library System...");
                     break;
                 default:

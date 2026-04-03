@@ -12,8 +12,10 @@ package control;
 import adt.DoublyLinkedList;
 import adt.ListInterface;
 import dao.BookDAO;
+import dao.FineDAO;
 import dao.BorrowRecordDAO;
 import entity.Book;
+import entity.Fine;
 import entity.BorrowRecord;
 import entity.Reservation;
 
@@ -25,10 +27,14 @@ public class ReportManagement {
 
     private BorrowRecordDAO borrowRecordDAO = new BorrowRecordDAO();
     private BookDAO bookDAO = new BookDAO();
+    private ListInterface<Fine> fineList;
+    private FineDAO fineDAO = new FineDAO();
+    
 
     public ReportManagement() {
         borrowRecordList = borrowRecordDAO.retrieveFromFile();
         bookList = bookDAO.retrieveFromFile();
+        fineList = fineDAO.retrieveFromFile();
         reservationList = new DoublyLinkedList<>();
     }
 
@@ -40,76 +46,218 @@ public class ReportManagement {
         return reservationList;
     }
 
-    public String getMostBorrowedBooksReport() {
+    public String getTop5MostBorrowedBooksReport() {
         if (borrowRecordList == null || borrowRecordList.isEmpty()) {
             return "No borrowing records found.";
         }
 
-        ListInterface<String> countedBookIDs = new DoublyLinkedList<>();
-        int highestCount = 0;
+        ListInterface<String> bookIDList = new DoublyLinkedList<>();
+        ListInterface<Integer> borrowCountList = new DoublyLinkedList<>();
         StringBuilder output = new StringBuilder();
 
         for (int i = 1; i <= borrowRecordList.size(); i++) {
-            BorrowRecord currentRecord = borrowRecordList.get(i);
+            BorrowRecord record = borrowRecordList.get(i);
 
-            if (currentRecord == null || currentRecord.getBookID() == null) {
+            if (record == null || record.getBookID() == null) {
                 continue;
             }
 
-            String currentBookID = currentRecord.getBookID();
+            String currentBookID = record.getBookID().trim();
 
-            if (countedBookIDs.contains(currentBookID)) {
-                continue;
-            }
+            int index = bookIDList.indexOf(currentBookID);
 
-            int count = 0;
-
-            for (int j = 1; j <= borrowRecordList.size(); j++) {
-                BorrowRecord compareRecord = borrowRecordList.get(j);
-
-                if (compareRecord != null
-                        && compareRecord.getBookID() != null
-                        && compareRecord.getBookID().equalsIgnoreCase(currentBookID)) {
-                    count++;
-                }
-            }
-
-            countedBookIDs.add(currentBookID);
-
-            if (count > highestCount) {
-                highestCount = count;
+            if (index == -1) {
+                bookIDList.add(currentBookID);
+                borrowCountList.add(1);
+            } else {
+                int currentCount = borrowCountList.get(index);
+                borrowCountList.set(index, currentCount + 1);
             }
         }
 
-        if (highestCount == 0) {
+        if (bookIDList.isEmpty()) {
             return "No borrowing records found.";
         }
 
-        for (int i = 1; i <= countedBookIDs.size(); i++) {
-            String bookID = countedBookIDs.get(i);
-            int count = 0;
+        for (int i = 1; i <= borrowCountList.size() - 1; i++) {
+            for (int j = 1; j <= borrowCountList.size() - i; j++) {
+                if (borrowCountList.get(j) < borrowCountList.get(j + 1)) {
+                    
+                    int tempCount = borrowCountList.get(j);
+                    borrowCountList.set(j, borrowCountList.get(j + 1));
+                    borrowCountList.set(j + 1, tempCount);
 
-            for (int j = 1; j <= borrowRecordList.size(); j++) {
-                BorrowRecord r = borrowRecordList.get(j);
-
-                if (r != null
-                        && r.getBookID() != null
-                        && r.getBookID().equalsIgnoreCase(bookID)) {
-                    count++;
+                    String tempBookID = bookIDList.get(j);
+                    bookIDList.set(j, bookIDList.get(j + 1));
+                    bookIDList.set(j + 1, tempBookID);
                 }
-            }
-
-            if (count == highestCount) {
-                Book book = findBookById(bookID);
-
-                output.append(String.format("%-10s %-30s %-15d%n",
-                        bookID,
-                        book != null ? book.getTitle() : "Unknown Title",
-                        count));
             }
         }
 
-        return output.length() == 0 ? "No borrowing records found." : output.toString();
+        output.append(String.format("%-5s %-10s %-35s %-10s%n", 
+                "No", "Book ID", "Book Title", "Borrowed"));
+        output.append("---------------------------------------------------------------------\n");
+
+        int limit = Math.min(5, bookIDList.size());
+
+        for (int i = 1; i <= limit; i++) {
+            String bookID = bookIDList.get(i);
+            int count = borrowCountList.get(i);
+            Book book = findBookById(bookID);
+
+            output.append(String.format("%-5d %-10s %-35s %-10d%n",
+                    i,
+                    bookID,
+                    book != null ? book.getTitle() : "Unknown Title",
+                    count));
+        }
+
+        return output.toString();
+    }
+   
+    public String getTop5MostActiveBorrowersReport() {
+
+        if (borrowRecordList == null || borrowRecordList.isEmpty()) {
+            return "No borrowing records found.";
+        }
+
+        ListInterface<String> borrowerIDList = new DoublyLinkedList<>();
+        ListInterface<Integer> borrowCountList = new DoublyLinkedList<>();
+        StringBuilder output = new StringBuilder();
+
+        for (int i = 1; i <= borrowRecordList.size(); i++) {
+            BorrowRecord record = borrowRecordList.get(i);
+
+            if (record == null || record.getBorrowerID() == null) {
+                continue;
+            }
+
+            String borrowerID = record.getBorrowerID().trim();
+            int index = borrowerIDList.indexOf(borrowerID);
+
+            if (index == -1) {
+                borrowerIDList.add(borrowerID);
+                borrowCountList.add(1);
+            } else {
+                int currentCount = borrowCountList.get(index);
+                borrowCountList.set(index, currentCount + 1);
+            }
+        }
+
+        if (borrowerIDList.isEmpty()) {
+            return "No borrowing records found.";
+        }
+
+        for (int i = 1; i <= borrowCountList.size() - 1; i++) {
+            for (int j = 1; j <= borrowCountList.size() - i; j++) {
+                if (borrowCountList.get(j) < borrowCountList.get(j + 1)) {
+
+                    int tempCount = borrowCountList.get(j);
+                    borrowCountList.set(j, borrowCountList.get(j + 1));
+                    borrowCountList.set(j + 1, tempCount);
+
+                    String tempID = borrowerIDList.get(j);
+                    borrowerIDList.set(j, borrowerIDList.get(j + 1));
+                    borrowerIDList.set(j + 1, tempID);
+                }
+            }
+        }
+        
+        output.append(String.format("%-5s %-12s %-25s %-10s%n",
+                "No", "Student ID", "Student Name", "Total Borrow"));
+        output.append("------------------------------------------------------------------\n");
+
+        int limit = Math.min(5, borrowerIDList.size());
+
+        for (int i = 1; i <= limit; i++) {
+            String borrowerID = borrowerIDList.get(i);
+            int count = borrowCountList.get(i);
+
+            String studentName = findStudentNameByIdFromRecords(borrowerID);
+
+            output.append(String.format("%-5d %-12s %-25s %-10d%n",
+                    i,
+                    borrowerID,
+                    studentName != null ? studentName : "Unknown",
+                    count));
+        }
+
+        return output.toString();
+    }
+   
+    public String getTop5MostUnpaidFineBorrowersReport() {
+        if (fineList == null || fineList.isEmpty()) {
+            return "No fine records found.";
+        }
+
+        ListInterface<String> borrowerIDList = new DoublyLinkedList<>();
+        ListInterface<Integer> unpaidCountList = new DoublyLinkedList<>();
+        StringBuilder output = new StringBuilder();
+
+        for (int i = 1; i <= fineList.size(); i++) {
+            Fine fine = fineList.get(i);
+
+            if (fine == null
+                    || fine.getBorrowRecord() == null
+                    || fine.getBorrowRecord().getBorrowerID() == null
+                    || fine.getStatus() == null) {
+                continue;
+            }
+
+            if (!fine.getStatus().equalsIgnoreCase("Unpaid")) {
+                continue;
+            }
+
+            String borrowerID = fine.getBorrowRecord().getBorrowerID().trim();
+            int index = borrowerIDList.indexOf(borrowerID);
+
+            if (index == -1) {
+                borrowerIDList.add(borrowerID);
+                unpaidCountList.add(1);
+            } else {
+                int currentCount = unpaidCountList.get(index);
+                unpaidCountList.set(index, currentCount + 1);
+            }
+        }
+
+        if (borrowerIDList.isEmpty()) {
+            return "No unpaid fine records found.";
+        }
+
+        for (int i = 1; i <= unpaidCountList.size() - 1; i++) {
+            for (int j = 1; j <= unpaidCountList.size() - i; j++) {
+                if (unpaidCountList.get(j) < unpaidCountList.get(j + 1)) {
+
+                    int tempCount = unpaidCountList.get(j);
+                    unpaidCountList.set(j, unpaidCountList.get(j + 1));
+                    unpaidCountList.set(j + 1, tempCount);
+
+                    String tempID = borrowerIDList.get(j);
+                    borrowerIDList.set(j, borrowerIDList.get(j + 1));
+                    borrowerIDList.set(j + 1, tempID);
+                }
+            }
+        }
+
+        output.append(String.format("%-5s %-12s %-25s %-15s%n",
+                "No", "Student ID", "Student Name", "Unpaid Fine Count"));
+        output.append("--------------------------------------------------------------------------\n");
+
+        int limit = Math.min(5, borrowerIDList.size());
+
+        for (int i = 1; i <= limit; i++) {
+            String borrowerID = borrowerIDList.get(i);
+            int count = unpaidCountList.get(i);
+            String studentName = findStudentNameFromFineRecords(borrowerID);
+
+            output.append(String.format("%-5d %-12s %-25s %-15d%n",
+                    i,
+                    borrowerID,
+                    studentName,
+                    count));
+        }
+
+        return output.toString();
     }
 
     private Book findBookById(String bookID) {
@@ -128,5 +276,36 @@ public class ReportManagement {
         }
 
         return null;
+    }
+    
+    private String findStudentNameByIdFromRecords(String studentId) {
+        for (int i = 1; i <= borrowRecordList.size(); i++) {
+            BorrowRecord record = borrowRecordList.get(i);
+
+            if (record != null
+                    && record.getBorrowerID() != null
+                    && record.getBorrowerID().equalsIgnoreCase(studentId.trim())
+                    && record.getBorrowName() != null
+                    && !record.getBorrowName().trim().isEmpty()) {
+                return record.getBorrowName();
+            }
+        }
+        return "Unknown";
+    }
+    
+    private String findStudentNameFromFineRecords(String studentId) {
+        for (int i = 1; i <= fineList.size(); i++) {
+            Fine fine = fineList.get(i);
+
+            if (fine != null
+                    && fine.getBorrowRecord() != null
+                    && fine.getBorrowRecord().getBorrowerID() != null
+                    && fine.getBorrowRecord().getBorrowerID().equalsIgnoreCase(studentId.trim())
+                    && fine.getBorrowRecord().getBorrowName() != null
+                    && !fine.getBorrowRecord().getBorrowName().trim().isEmpty()) {
+                return fine.getBorrowRecord().getBorrowName();
+            }
+        }
+        return "Unknown";
     }
 }
