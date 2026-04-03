@@ -16,6 +16,13 @@ import java.time.LocalDate;
  * @author lEE
  */
 public class BorrowReturnBook {
+    private static final int RECORD_ID_COL_WIDTH = 8;
+    private static final int STUDENT_ID_COL_WIDTH = 10;
+    private static final int STUDENT_NAME_COL_WIDTH = 18;
+    private static final int BOOK_ID_COL_WIDTH = 8;
+    private static final int BOOK_NAME_COL_WIDTH = 28;
+    private static final int DATE_COL_WIDTH = 12;
+    private static final int STATUS_COL_WIDTH = 10;
     private ListInterface<Book> bookList = new DoublyLinkedList<>();
     private ListInterface<BorrowRecord> borrowRecordList = new DoublyLinkedList<>();
     private BookDAO bookDAO = new BookDAO();
@@ -207,31 +214,20 @@ public class BorrowReturnBook {
         
     public String getRecordsByStatus(String status) {
         reloadData();
-        StringBuilder output = new StringBuilder();
+               ListInterface<BorrowRecord> filteredList = new DoublyLinkedList<>();
 
-        for (int i = 1; i <= borrowRecordList.size(); i++) {
-            BorrowRecord record = borrowRecordList.get(i);
+            for (int i = 1; i <= borrowRecordList.size(); i++) {
+                BorrowRecord record = borrowRecordList.get(i);
 
-            if (record != null
-                    && record.getStatus() != null
-                    && record.getStatus().equalsIgnoreCase(status)) {
-
-                  
-                Book book = findBookById(record.getBookID());
-                String bookName = (book == null) ? "Unknown" : book.getTitle();
-
-                output.append("Book ID: ").append(record.getBookID())
-                        .append(" | Book Name: ").append(bookName)
-                        .append(" | Student: ").append(record.getBorrowerID())
-                        .append(" | Student Name: ").append(record.getBorrowName())
-                        .append(" | Borrow Date: ").append(record.getBorrowDate())
-                        .append(" | Return Date: ").append(record.getReturnDate() == null ? "-" : record.getReturnDate())
-                        .append("\n");
+                if (record != null
+                        && record.getStatus() != null
+                        && record.getStatus().equalsIgnoreCase(status)) {
+                    filteredList.add(record);
+                }
             }
-        }
 
-        return output.toString();
-    }
+            return formatBorrowRecordsForDisplay(filteredList);
+        }
         
     public String searchBook(String keyword) {
         reloadData();
@@ -265,13 +261,7 @@ public class BorrowReturnBook {
     
     public String getAllRecordString() {
         reloadData();
-        String outputStr = "";
-
-        for (int i = 1; i <= borrowRecordList.size(); i++) {
-            outputStr += borrowRecordList.get(i) + "\n";
-        }
-
-        return outputStr;
+         return formatBorrowRecordsForDisplay(borrowRecordList);
     }
     
     public void refreshExpiredStatus() {
@@ -398,31 +388,22 @@ public class BorrowReturnBook {
     }
     
     public String getActiveBorrowRecordStringByStudent(String studentId) {
-    StringBuilder output = new StringBuilder();
+    ListInterface<BorrowRecord> filteredList = new DoublyLinkedList<>();
 
-    for (int i = 1; i <= borrowRecordList.size(); i++) {
+     for (int i = 1; i <= borrowRecordList.size(); i++) {
         BorrowRecord record = borrowRecordList.get(i);
 
         if (record != null
-                && record.getBorrowerID()!= null
+                && record.getBorrowerID() != null
                 && record.getBorrowerID().equalsIgnoreCase(studentId.trim())
                 && record.getStatus() != null
-                && (record.getStatus().equalsIgnoreCase("BORROWED") || record.getStatus().equalsIgnoreCase("EXPIRED"))
-                ) {
-
-            Book book = findBookById(record.getBookID());
-            String bookTitle = (book == null) ? "Unknown Book" : book.getTitle();
-
-            output.append("Book ID: ").append(record.getBookID())
-                  .append(" | Book Name: ").append(bookTitle)
-                  .append(" | Borrow Date: ").append(record.getBorrowDate())
-                  .append(" | Expiry Date: ").append(record.getExpiryDate())
-                  .append(" | Status: ").append(record.getStatus())
-                  .append("\n");
+                && (record.getStatus().equalsIgnoreCase("BORROWED")
+                    || record.getStatus().equalsIgnoreCase("EXPIRED"))) {
+            filteredList.add(record);
         }
     }
 
-    return output.toString();
+    return formatBorrowRecordsForDisplay(filteredList);
 }
     
     
@@ -513,5 +494,53 @@ public class BorrowReturnBook {
         }
         return reservationControl.viewWaitingList(bookId);
     }
+    
+    private String formatBorrowRecordsForDisplay(ListInterface<BorrowRecord> records) {
+            if (records == null || records.isEmpty()) {
+                return "No borrow records found.";
+            }
+
+            String header = String.format(
+                    "%-" + RECORD_ID_COL_WIDTH + "s | %-" + STUDENT_ID_COL_WIDTH + "s | %-" + STUDENT_NAME_COL_WIDTH + "s | %-" + BOOK_ID_COL_WIDTH + "s | %-" + BOOK_NAME_COL_WIDTH + "s | %-" + DATE_COL_WIDTH + "s | %-" + DATE_COL_WIDTH + "s | %-" + DATE_COL_WIDTH + "s | %-" + STATUS_COL_WIDTH + "s",
+                    "RecordID", "StudentID", "Student Name", "BookID", "Book Name",
+                    "Borrow Date", "Return Date", "Expiry Date", "Status"
+            );
+
+            String line = "-".repeat(header.length());
+            StringBuilder output = new StringBuilder();
+
+            output.append(header).append("\n");
+            output.append(line).append("\n");
+
+            for (int i = 1; i <= records.size(); i++) {
+                BorrowRecord record = records.get(i);
+                if (record == null) {
+                    continue;
+                }
+
+                Book book = findBookById(record.getBookID());
+                String bookName = (book == null) ? "Unknown" : book.getTitle();
+
+                output.append(String.format(
+                        "%-" + RECORD_ID_COL_WIDTH + "s | %-" + STUDENT_ID_COL_WIDTH + "s | %-" + STUDENT_NAME_COL_WIDTH + "s | %-" + BOOK_ID_COL_WIDTH + "s | %-" + BOOK_NAME_COL_WIDTH + "s | %-" + DATE_COL_WIDTH + "s | %-" + DATE_COL_WIDTH + "s | %-" + DATE_COL_WIDTH + "s | %-" + STATUS_COL_WIDTH + "s",
+                        safe(record.getRecordID()),
+                        safe(record.getBorrowerID()),
+                        safe(record.getBorrowName()),
+                        safe(record.getBookID()),
+                        safe(bookName),
+                        safe(record.getBorrowDate()),
+                        safe(record.getReturnDate() == null ? "-" : record.getReturnDate()),
+                        safe(record.getExpiryDate()),
+                        safe(record.getStatus())
+                ));
+                output.append("\n");
+            }
+
+            return output.toString();
+        }
+    
+    private String safe(String text) {
+            return text == null ? "" : text;
+        }
 
 }

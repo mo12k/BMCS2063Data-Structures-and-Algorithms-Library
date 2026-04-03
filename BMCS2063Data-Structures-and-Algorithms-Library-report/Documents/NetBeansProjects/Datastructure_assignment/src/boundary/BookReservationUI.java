@@ -12,6 +12,10 @@ public class BookReservationUI {
         this.reservationControl = reservationControl;
     }
 
+    BookReservationUI() {
+         this.reservationControl = reservationControl;
+    }
+
     public void startReservationModule() {
         int choice;
 

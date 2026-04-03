@@ -50,7 +50,7 @@ public class testReserve {
 
         // Launch UI
         BookReservationUI ui = new BookReservationUI(reservationControl);
-        ui.start();
+        ui.startReservationModule();
     }
 }
 

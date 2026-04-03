@@ -8,7 +8,7 @@ public class LibrarySystemUI {
     private Scanner scanner = new Scanner(System.in);
 
     private BookMaintenance bookMaintenance = new BookMaintenance();
-    private BookReservation bookReservation = new BookReservation();
+    private BookReservationUI bookReservation = new BookReservationUI();
     private BorrowReturnUI borrowReturnUI = new BorrowReturnUI();
     private FineManagementUI fineManagementUI = new FineManagementUI();
     private ReportUI reportUI = new ReportUI();
