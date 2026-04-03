@@ -3,7 +3,7 @@ package boundary;
 import control.BorrowReturnBook;
 import control.FineManagement;
 import java.util.Scanner;
-
+import utility.UITools;
 public class FineManagementUI {
 
     private Scanner scanner = new Scanner(System.in);
@@ -56,7 +56,7 @@ public class FineManagementUI {
         System.out.println("0. Exit");
         System.out.println("--------------------------------------------------");
         System.out.print("Enter choice: ");
-        return readInt();
+        return UITools.readInt();
     }
 
     private void runStaffMenu() {
@@ -108,7 +108,7 @@ public class FineManagementUI {
         System.out.println("0. Back");
         System.out.println("--------------------------------------------------");
         System.out.print("Enter choice: ");
-        return readInt();
+        return UITools.readInt();
     }
 
     private int getStudentMenuChoice() {
@@ -120,7 +120,7 @@ public class FineManagementUI {
         System.out.println("0. Back");
         System.out.println("--------------------------------------------------");
         System.out.print("Enter choice: ");
-        return readInt();
+        return UITools.readInt();
     }
 
     private void displayUnpaidFines() {
@@ -134,7 +134,7 @@ public class FineManagementUI {
         String result = fineControl.displayUnpaidFines();
         System.out.println(result);
 
-        pause();
+       UITools.pressEnterToContinue();
     }
 
     private void payFine() {
@@ -148,7 +148,7 @@ public class FineManagementUI {
         System.out.println("--------------------------------------------------");
         System.out.println(result);
 
-        pause();
+        UITools.pressEnterToContinue();
     }
 
     private void viewStudentFineHistory() {
@@ -165,7 +165,7 @@ public class FineManagementUI {
         String result = fineControl.viewStudentFines(studentID);
         System.out.println(result);
 
-        pause();
+        UITools.pressEnterToContinue();
     }
 
     private String inputStudentID() {
@@ -178,19 +178,4 @@ public class FineManagementUI {
         return scanner.nextLine().trim().toUpperCase();
     }
 
-    private int readInt() {
-        while (!scanner.hasNextInt()) {
-            System.out.print("Invalid input. Please enter a number: ");
-            scanner.next();
-        }
-        int value = scanner.nextInt();
-        scanner.nextLine();
-        return value;
-    }
-
-    private void pause() {
-        System.out.println("--------------------------------------------------");
-        System.out.print("Press Enter to continue...");
-        scanner.nextLine();
-    }
 }

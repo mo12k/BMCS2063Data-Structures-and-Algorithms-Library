@@ -12,6 +12,7 @@ import control.BorrowReturnBook;
 import control.FineManagement;
 import entity.Book;
 import entity.Fine;
+import utility.UITools;
 import java.util.Scanner;
 
 public class BorrowReturnUI {
@@ -66,7 +67,7 @@ public class BorrowReturnUI {
         System.out.println("0. Exit");
         System.out.println("--------------------------------------------------");
         System.out.print("Enter choice: ");
-        return readInt();
+        return UITools.readInt();
     }
 
     private void runStaffMenu() {
@@ -121,7 +122,7 @@ public class BorrowReturnUI {
         System.out.println("0. Back");
         System.out.println("--------------------------------------------------");
         System.out.print("Enter choice: ");
-        return readInt();
+        return UITools.readInt();
     }
 
     private int getStudentMenuChoice() {
@@ -134,7 +135,7 @@ public class BorrowReturnUI {
         System.out.println("0. Back");
         System.out.println("--------------------------------------------------");
         System.out.print("Enter choice: ");
-        return readInt();
+        return UITools.readInt();
     }
 
     private void searchBookAndBorrow() {
@@ -228,7 +229,7 @@ public class BorrowReturnUI {
             }
         }
 
-        pause();
+        UITools.pressEnterToContinue();
     }
 
     private void returnBook() {
@@ -266,7 +267,7 @@ public class BorrowReturnUI {
             System.out.println("Return failed. Record not found.");
         }
 
-        pause();
+        UITools.pressEnterToContinue();
     }
 
     private void viewWaitingList() {
@@ -282,7 +283,7 @@ public class BorrowReturnUI {
 
         if (resultBook == null || resultBook.trim().isEmpty()) {
             System.out.println("No matching books found.");
-            pause();
+            UITools.pressEnterToContinue();
             return;
         }
 
@@ -294,7 +295,7 @@ public class BorrowReturnUI {
         String waitingListResult = control.viewWaitingList(bookId);
         System.out.println(waitingListResult);
 
-        pause();
+        UITools.pressEnterToContinue();
     }
 
     private void displayBorrowedBooks() {
@@ -308,7 +309,7 @@ public class BorrowReturnUI {
         System.out.println("--------------------------------------------------");
         System.out.print("Enter choice: ");
 
-        int choice = readInt();
+        int choice = UITools.readInt();
 
         String status = "";
 
@@ -341,7 +342,7 @@ public class BorrowReturnUI {
             System.out.println(output);
         }
 
-        pause();
+        UITools.pressEnterToContinue();
     }
 
     private String inputBorrowerId() {
@@ -357,22 +358,6 @@ public class BorrowReturnUI {
     private String inputSearchKeyword() {
         System.out.print("Enter Book Title / Author / Category keyword: ");
         return scanner.nextLine().trim();
-    }
-
-    private int readInt() {
-        while (!scanner.hasNextInt()) {
-            System.out.print("Invalid input. Please enter a number: ");
-            scanner.next();
-        }
-        int value = scanner.nextInt();
-        scanner.nextLine();
-        return value;
-    }
-
-    private void pause() {
-        System.out.println("--------------------------------------------------");
-        System.out.print("Press Enter to continue...");
-        scanner.nextLine();
     }
     
     //Yang

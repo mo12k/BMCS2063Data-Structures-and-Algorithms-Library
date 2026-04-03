@@ -1,6 +1,7 @@
 package boundary;
 
 import control.BookReservation;
+import utility.UITools;
 import java.util.Scanner;
 
 public class BookReservationUI {
@@ -77,7 +78,7 @@ public class BookReservationUI {
         System.out.println("0. Back");
         System.out.println("--------------------------------------------------");
         System.out.print("Enter choice: ");
-        return readInt();
+        return UITools.readInt();
     }
 
     private int getStudentMenuChoice() {
@@ -89,7 +90,7 @@ public class BookReservationUI {
         System.out.println("0. Back");
         System.out.println("--------------------------------------------------");
         System.out.print("Enter choice: ");
-        return readInt();
+        return UITools.readInt();
     }
 
     private void reserveBook() {
@@ -105,7 +106,7 @@ public class BookReservationUI {
         String result = reservationControl.reserveBook(studentID, bookID, studentName);
         System.out.println(result);
 
-        pause();
+        UITools.pressEnterToContinue();
     }
 
     private void cancelReservation() {
@@ -118,7 +119,7 @@ public class BookReservationUI {
         String result = reservationControl.cancelReservation(studentID, bookID);
         System.out.println(result);
 
-        pause();
+        UITools.pressEnterToContinue();
     }
 
     private void viewWaitingList() {
@@ -132,7 +133,7 @@ public class BookReservationUI {
         String result = reservationControl.viewWaitingList(bookID);
         System.out.println(result);
 
-        pause();
+        UITools.pressEnterToContinue();
     }
 
     private void notifyNextStudent() {
@@ -142,7 +143,7 @@ public class BookReservationUI {
         String result = reservationControl.notifyNextStudent(bookID);
         System.out.println(result);
 
-        pause();
+        UITools.pressEnterToContinue();
     }
 
     private void notifyDelay() {
@@ -152,7 +153,7 @@ public class BookReservationUI {
         String result = reservationControl.notifyDelay(bookID);
         System.out.println(result);
 
-        pause();
+        UITools.pressEnterToContinue();
     }
 
     private void notifyBookRemoval() {
@@ -162,22 +163,7 @@ public class BookReservationUI {
         String result = reservationControl.notifyBookRemoval(bookID);
         System.out.println(result);
 
-        pause();
+        UITools.pressEnterToContinue();
     }
 
-    private int readInt() {
-        while (!scanner.hasNextInt()) {
-            System.out.print("Invalid input. Please enter a number: ");
-            scanner.next();
-        }
-        int value = scanner.nextInt();
-        scanner.nextLine();
-        return value;
-    }
-
-    private void pause() {
-        System.out.println("--------------------------------------------------");
-        System.out.print("Press Enter to continue...");
-        scanner.nextLine();
-    }
 }

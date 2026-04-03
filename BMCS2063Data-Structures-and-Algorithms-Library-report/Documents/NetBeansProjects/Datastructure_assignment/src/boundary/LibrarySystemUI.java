@@ -2,6 +2,7 @@ package boundary;
 
 import control.BookMaintenance;
 import java.util.Scanner;
+import utility.UITools;
 
 public class LibrarySystemUI {
 
@@ -46,7 +47,7 @@ public class LibrarySystemUI {
         System.out.println("0. Exit");
         System.out.println("--------------------------------------------------");
         System.out.print("Enter choice: ");
-        return readInt();
+        return UITools.readInt();
     }
 
     private void runStaffPortal() {
@@ -120,7 +121,7 @@ public class LibrarySystemUI {
         System.out.println("0. Back");
         System.out.println("--------------------------------------------------");
         System.out.print("Enter choice: ");
-        return readInt();
+        return UITools.readInt();
     }
 
     private int getStudentPortalChoice() {
@@ -134,7 +135,7 @@ public class LibrarySystemUI {
         System.out.println("0. Back");
         System.out.println("--------------------------------------------------");
         System.out.print("Enter choice: ");
-        return readInt();
+        return UITools.readInt();
     }
 
     private int readInt() {
