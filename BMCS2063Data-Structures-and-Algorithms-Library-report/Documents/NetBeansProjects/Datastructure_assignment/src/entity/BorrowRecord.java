@@ -125,18 +125,50 @@ public class BorrowRecord implements Serializable {
     
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
+        if (this == obj) {
+            return true;
+        }
 
-        BorrowRecord other = (BorrowRecord) obj;
-
-        if (this.recordID == null || other.recordID == null) {
+        if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
 
-        return this.recordID.equalsIgnoreCase(other.recordID);
+        BorrowRecord other = (BorrowRecord) obj;
+
+        if (this.recordID != null && other.recordID != null) {
+            return this.recordID.equalsIgnoreCase(other.recordID);
+        }
+
+        if (this.studentID == null || other.studentID == null) {
+            return false;
+        }
+
+        if (this.bookID == null || other.bookID == null) {
+            return false;
+        }
+
+        if (this.status == null || other.status == null) {
+            return false;
+        }
+
+        return this.studentID.equalsIgnoreCase(other.studentID)
+                && this.bookID.equalsIgnoreCase(other.bookID)
+                && this.status.equalsIgnoreCase(other.status);
     }
 
+    @Override
+    public int hashCode() {
+        if (recordID != null) {
+            return recordID.toUpperCase().hashCode();
+        }
+
+        String student = studentID == null ? "" : studentID.toUpperCase();
+        String book = bookID == null ? "" : bookID.toUpperCase();
+        String stat = status == null ? "" : status.toUpperCase();
+
+        return (student + "|" + book + "|" + stat).hashCode();
+    }
+    
     @Override
     public String toString() {
         return String.format("%s | Student: %s | StudentName: %s | Book: %s | Borrow Date: %s | Return Date: %s | Expiry Date: %s | Status: %s  ",
