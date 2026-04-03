@@ -32,13 +32,16 @@ public class BorrowReturnBook {
     
     
     public BorrowReturnBook() {
-            bookList = bookDAO.retrieveFromFile();
-            borrowRecordList = borrowRecordDAO.retrieveFromFile();
-            
-         
-           if(borrowRecordList.isEmpty()){
-                   initializeSampleRecord();
-           }}
+    bookList = bookDAO.retrieveFromFile();
+    borrowRecordList = borrowRecordDAO.retrieveFromFile();
+
+    initializeRecordCounter();
+
+    if (borrowRecordList.isEmpty()) {
+        initializeSampleRecord();
+        initializeRecordCounter();
+    }
+}
     
     public Book findBookById(String bookId) {
         if (bookId == null || bookId.trim().isEmpty()) {
@@ -538,6 +541,26 @@ public class BorrowReturnBook {
 
             return output.toString();
         }
+    
+    private void initializeRecordCounter() {
+        int max = 0;
+
+        for (int i = 1; i <= borrowRecordList.size(); i++) {
+            BorrowRecord record = borrowRecordList.get(i);
+
+            if (record != null && record.getRecordID() != null) {
+                try {
+                    int num = Integer.parseInt(record.getRecordID().substring(1));
+                    if (num > max) {
+                        max = num;
+                    }
+                } catch (Exception e) {
+                }
+            }
+        }
+
+        BorrowRecord.setRecordCount(max + 1);
+    }
     
     private String safe(String text) {
             return text == null ? "" : text;

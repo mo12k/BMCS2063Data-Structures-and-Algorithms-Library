@@ -7,7 +7,7 @@ package boundary;
 
 import entity.Book;
 import java.util.Scanner;
-
+import utility.UITools;
 
 /**
  *
@@ -142,8 +142,6 @@ public class BookMaintenanceUI {
         }
     }
     
-
-
     public int inputQuantity() {
         while (true) {
             System.out.print("Enter quantity: ");
@@ -174,8 +172,6 @@ public class BookMaintenanceUI {
             System.out.println("Invalid input. Enter Y or N.");
         }
     }
-    
-
 
     public Book inputBookDetails(){
         String title = inputBookTitle();

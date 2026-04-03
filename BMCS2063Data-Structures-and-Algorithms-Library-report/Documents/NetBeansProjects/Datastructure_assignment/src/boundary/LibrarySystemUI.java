@@ -138,16 +138,6 @@ public class LibrarySystemUI {
         return UITools.readInt();
     }
 
-    private int readInt() {
-        while (!scanner.hasNextInt()) {
-            System.out.print("Invalid input. Please enter a number: ");
-            scanner.next();
-        }
-        int value = scanner.nextInt();
-        scanner.nextLine();
-        return value;
-    }
-
     public static void main(String[] args) {
         LibrarySystemUI systemUI = new LibrarySystemUI();
         systemUI.startSystem();

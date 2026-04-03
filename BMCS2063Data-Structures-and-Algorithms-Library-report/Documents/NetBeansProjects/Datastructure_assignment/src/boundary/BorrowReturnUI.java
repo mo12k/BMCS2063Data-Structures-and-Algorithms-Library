@@ -262,7 +262,7 @@ public class BorrowReturnUI {
 
         if (success) {
             System.out.println("Book returned successfully.");
-            handleFineAfterReturn(studentId, bookId);
+            handleFineAfterReturn(recordID);
         } else {
             System.out.println("Return failed. Record not found.");
         }
@@ -361,10 +361,10 @@ public class BorrowReturnUI {
     }
     
     //Yang
-    private void handleFineAfterReturn(String studentID, String bookID) {
+    private void handleFineAfterReturn(String recordID) {
         FineManagement fineControl = new FineManagement();
 
-        Fine fines = fineControl.findUnpaidFine(studentID, bookID);
+        Fine fines = fineControl.findUnpaidFine(recordID);
 
         if (fines == null) {
             return;

@@ -102,19 +102,4 @@ public class ReportUI {
         UITools.pressEnterToContinue();
     }
 
-    private int readInt() {
-        while (!scanner.hasNextInt()) {
-            System.out.print("Invalid input. Please enter a number: ");
-            scanner.next();
-        }
-        int value = scanner.nextInt();
-        scanner.nextLine();
-        return value;
-    }
-
-    private void pressEnterToContinue() {
-        System.out.println("--------------------------------------------------");
-        System.out.print("Press Enter to continue...");
-        scanner.nextLine();
-    }
 }

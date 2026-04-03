@@ -48,7 +48,7 @@ public class FineManagement {
 
             if (overdueDays > 0) {
 
-                Fine existingFine = findAnyFine(record.getBorrowerID(), record.getBookID());
+                Fine existingFine = findAnyFine(record.getRecordID());
 
                 if (existingFine == null) {
                     Fine fine = new Fine(
@@ -127,31 +127,31 @@ public class FineManagement {
         return output.isEmpty() ? "No fines found." : output;
     }
 
-    public Fine findUnpaidFine(String studentID, String bookID) {
+    public Fine findUnpaidFine(String recordID) {
         for (int i = 1; i <= fineList.size(); i++) {
             Fine fine = fineList.get(i);
 
             if (fine != null
                     && fine.getBorrowRecord() != null
+                    && fine.getBorrowRecord().getRecordID() != null
                     && fine.getStatus().equalsIgnoreCase("Unpaid")
-                    && fine.getBorrowRecord().getBorrowerID().equalsIgnoreCase(studentID)
-                    && fine.getBorrowRecord().getBookID().equalsIgnoreCase(bookID)) {
+                    && fine.getBorrowRecord().getRecordID().equalsIgnoreCase(recordID)) {
                 return fine;
             }
         }
         return null;
     }
     
-    private Fine findAnyFine(String studentID, String bookID){
-        for (int i = 1; i <= fineList.size(); i++){
+    private Fine findAnyFine(String recordID) {
+        for (int i = 1; i <= fineList.size(); i++) {
             Fine fine = fineList.get(i);
-            
-            if(fine != null
-                && fine.getBorrowRecord() !=null
-                && fine.getBorrowRecord().getBorrowerID().equalsIgnoreCase(studentID)
-                && fine.getBorrowRecord().getBookID().equalsIgnoreCase(bookID)){
-                return fine;   
-            }     
+
+            if (fine != null
+                    && fine.getBorrowRecord() != null
+                    && fine.getBorrowRecord().getRecordID() != null
+                    && fine.getBorrowRecord().getRecordID().equalsIgnoreCase(recordID)) {
+                return fine;
+            }
         }
         return null;
     }

@@ -26,8 +26,6 @@ public class BorrowRecord implements Serializable {
 
     private static int recordCount = 1;
 
- 
-
     public BorrowRecord(String borrowerID, String bookID,String studentName) {
         
         this.recordID = generateRecordID();
@@ -51,14 +49,15 @@ public class BorrowRecord implements Serializable {
         this.status = status;
     }
 
-  
-
-    
     
     private String generateRecordID() {
         return String.format("R%04d", recordCount++);
     }
-
+    
+    public static void setRecordCount(int nextCount) {
+    recordCount = nextCount;
+    }
+    
     public String getRecordID() {
         return recordID;
     }
@@ -131,9 +130,11 @@ public class BorrowRecord implements Serializable {
 
         BorrowRecord other = (BorrowRecord) obj;
 
-        return this.getBorrowerID().equalsIgnoreCase(other.getBorrowerID())
-                && this.getBookID().equalsIgnoreCase(other.getBookID())
-                && this.getStatus().equalsIgnoreCase(other.getStatus());
+        if (this.recordID == null || other.recordID == null) {
+            return false;
+        }
+
+        return this.recordID.equalsIgnoreCase(other.recordID);
     }
 
     @Override
