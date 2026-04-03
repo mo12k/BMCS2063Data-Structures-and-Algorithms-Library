@@ -258,14 +258,14 @@ public class BorrowReturnUI {
         String bookIdInput = inputBookId();
         String bookId = bookIdInput.toUpperCase();
 
-        boolean success = control.returnBook(studentId, bookId);
+        String recordID = control.returnBook(studentId, bookId);
 
-        if (success) {
-            System.out.println("Book returned successfully.");
-            handleFineAfterReturn(recordID);
-        } else {
-            System.out.println("Return failed. Record not found.");
-        }
+            if (recordID != null) {
+                System.out.println("Book returned successfully.");
+                handleFineAfterReturn(recordID);
+            } else {
+                System.out.println("Return failed. Record not found.");
+            }
 
         UITools.pressEnterToContinue();
     }
@@ -363,6 +363,9 @@ public class BorrowReturnUI {
     //Yang
     private void handleFineAfterReturn(String recordID) {
         FineManagement fineControl = new FineManagement();
+        BorrowReturnBook borrowControl = new BorrowReturnBook();
+
+        fineControl.autoGenerateFines(borrowControl.getAllRecords());
 
         Fine fines = fineControl.findUnpaidFine(recordID);
 

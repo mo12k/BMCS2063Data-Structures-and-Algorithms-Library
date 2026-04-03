@@ -73,48 +73,39 @@ public class BorrowReturnBook {
         return null;
     }
     
-    public boolean returnBook(String studentId, String bookId) {
+    public String returnBook(String studentId, String bookId) {
         reloadData();
+
         if (!isValidStudentId(studentId)) {
-            return false;
+            return null;
         }
 
         BorrowRecord probe = new BorrowRecord(
-            studentId, "",
-            bookId, "",
-            null, "",
-            "BORROWED"
-            );
+            studentId, "", bookId, "", null, "", "BORROWED"
+        );
 
         int pos = borrowRecordList.indexOf(probe);
 
         if (pos == -1) {
             probe = new BorrowRecord(
-            studentId, "",
-            bookId, "",
-            null, "",
-            "EXPIRED"
+                studentId, "", bookId, "", null, "", "EXPIRED"
             );
             pos = borrowRecordList.indexOf(probe);
         }
-        
-        if (pos == -1) {
-            return false;
 
+        if (pos == -1) {
+            return null;
         }
 
         BorrowRecord record = borrowRecordList.get(pos);
 
-          
         record.setReturnDate(LocalDate.now().toString());
         record.setStatus("RETURNED");
-        
-        borrowRecordList.set(pos, record);
-        Book book = findBookById(bookId);
 
-        if ( book == null) {
-            return false;
-        }          
+        borrowRecordList.set(pos, record);
+
+        Book book = findBookById(bookId);
+        if (book == null) return null;
 
         book.setQuantity(book.getQuantity() + 1);
         book.setIsAvailable(true);
@@ -122,7 +113,7 @@ public class BorrowReturnBook {
         bookDAO.saveToFile(bookList);
         borrowRecordDAO.saveToFile(borrowRecordList);
 
-        return true;
+        return record.getRecordID();
     }
 
     public BorrowRecord findActiveBorrowRecord(String studentId, String bookId) {

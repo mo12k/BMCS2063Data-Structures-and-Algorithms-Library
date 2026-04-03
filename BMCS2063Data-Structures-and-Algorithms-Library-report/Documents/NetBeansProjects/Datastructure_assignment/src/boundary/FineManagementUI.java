@@ -138,6 +138,7 @@ public class FineManagementUI {
     }
 
     private void payFine() {
+
         System.out.println("\n==================================================");
         System.out.println("                     PAY FINE                     ");
         System.out.println("==================================================");
