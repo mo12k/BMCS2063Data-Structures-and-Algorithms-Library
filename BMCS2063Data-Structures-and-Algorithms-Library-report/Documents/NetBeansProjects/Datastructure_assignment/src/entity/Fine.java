@@ -67,4 +67,15 @@ public class Fine implements Serializable {
     public void setStatus(String status) {
         this.status = status;
     }
+    
+    @Override
+    public String toString() {
+        return String.format("%-7s | %-10s | RM %-8.2f | %-10s | %d day(s)",
+                fineID,
+                borrowRecord.getBookID(),
+                amount,
+                status,
+                overdueDays);
+    }
+    
 }

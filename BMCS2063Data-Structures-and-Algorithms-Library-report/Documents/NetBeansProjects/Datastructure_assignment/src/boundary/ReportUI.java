@@ -27,15 +27,6 @@ public class ReportUI {
 
             switch (choice) {
                 case 1:
-                    showCurrentReserveReport();
-                    break;
-                case 2:
-                    showBorrowedBooksReport();
-                    break;
-                case 3:
-                    showOverdueBooksReport();
-                    break;
-                case 4:
                     showMostBorrowedBooksReport();
                     break;
                 case 0:
@@ -52,61 +43,10 @@ public class ReportUI {
         System.out.println("\n==================================================");
         System.out.println("                  LIBRARY REPORT MODULE           ");
         System.out.println("==================================================");
-        System.out.println("1. Current Reserve Report");
-        System.out.println("2. Borrowed Books Report");
-        System.out.println("3. Overdue Books Report");
-        System.out.println("4. Most Borrowed Books Report");
+        System.out.println("1. Most Borrowed Books Report");
         System.out.println("0. Exit");
         System.out.println("--------------------------------------------------");
         System.out.print("Enter choice: ");
-    }
-
-    private void showCurrentReserveReport() {
-        System.out.println("\n==================================================");
-        System.out.println("               CURRENT RESERVE REPORT             ");
-        System.out.println("==================================================");
-        System.out.println("Reservation records that are currently active");
-        System.out.println("--------------------------------------------------");
-        System.out.printf("%-12s %-12s %-10s %-15s %-12s%n",
-                "Reserve ID", "Student ID", "Book ID", "Reserve Date", "Status");
-        System.out.println("--------------------------------------------------");
-
-        String result = reportControl.getCurrentReserveReport();
-        System.out.println(result);
-
-        pressEnterToContinue();
-    }
-
-    private void showBorrowedBooksReport() {
-        System.out.println("\n==================================================");
-        System.out.println("               BORROWED BOOKS REPORT              ");
-        System.out.println("==================================================");
-        System.out.println("Books that are currently borrowed by users");
-        System.out.println("--------------------------------------------------");
-        System.out.printf("%-10s %-12s %-10s %-15s %-15s %-10s%n",
-                "Record ID", "Student ID", "Book ID", "Borrow Date", "Expiry Date", "Status");
-        System.out.println("--------------------------------------------------");
-
-        String result = reportControl.getBorrowedBooksReport();
-        System.out.println(result);
-
-        pressEnterToContinue();
-    }
-
-    private void showOverdueBooksReport() {
-        System.out.println("\n==================================================");
-        System.out.println("                OVERDUE BOOKS REPORT              ");
-        System.out.println("==================================================");
-        System.out.println("Books that have passed the expiry date");
-        System.out.println("--------------------------------------------------");
-        System.out.printf("%-10s %-12s %-10s %-15s %-15s %-10s%n",
-                "Record ID", "Student ID", "Book ID", "Expiry Date", "Overdue Days", "Status");
-        System.out.println("--------------------------------------------------");
-
-        String result = reportControl.getOverdueBooksReport();
-        System.out.println(result);
-
-        pressEnterToContinue();
     }
 
     private void showMostBorrowedBooksReport() {

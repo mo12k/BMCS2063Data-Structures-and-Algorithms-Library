@@ -14,7 +14,6 @@ import adt.ListInterface;
 import dao.FineDAO;
 import entity.BorrowRecord;
 import entity.Fine;
-import utility.DateUtil;
 import utility.FineCalculator;
 
 public class FineManagement {
@@ -37,12 +36,19 @@ public class FineManagement {
             }
 
             LocalDate dueDate = LocalDate.parse(record.getExpiryDate());
-            int overdueDays = DateUtil.calculateOverdueDays(dueDate);
+            LocalDate returnDate;
 
-            if (overdueDays > 0
-                    && !record.getStatus().equalsIgnoreCase("RETURNED")) {
+            if (record.getReturnDate() != null) {
+                returnDate = LocalDate.parse(record.getReturnDate());
+            } else {
+                returnDate = LocalDate.now();
+            }
 
-                Fine existingFine = findUnpaidFine(record.getBorrowerID(), record.getBookID());
+            int overdueDays = (int) java.time.temporal.ChronoUnit.DAYS.between(dueDate, returnDate);
+
+            if (overdueDays > 0) {
+
+                Fine existingFine = findAnyFine(record.getBorrowerID(), record.getBookID());
 
                 if (existingFine == null) {
                     Fine fine = new Fine(
@@ -122,7 +128,7 @@ public class FineManagement {
         return output.isEmpty() ? "No fines found." : output;
     }
 
-    private Fine findUnpaidFine(String studentID, String bookID) {
+    public Fine findUnpaidFine(String studentID, String bookID) {
         for (int i = 1; i <= fineList.size(); i++) {
             Fine fine = fineList.get(i);
 
@@ -136,12 +142,26 @@ public class FineManagement {
         }
         return null;
     }
+    
+    private Fine findAnyFine(String studentID, String bookID){
+        for (int i = 1; i <= fineList.size(); i++){
+            Fine fine = fineList.get(i);
+            
+            if(fine != null
+                && fine.getBorrowRecord() !=null
+                && fine.getBorrowRecord().getBorrowerID().equalsIgnoreCase(studentID)
+                && fine.getBorrowRecord().getBookID().equalsIgnoreCase(bookID)){
+                return fine;   
+            }     
+        }
+        return null;
+    }
 
     private String generateFineID() {
             return "F" + String.format("%03d", fineCounter++);
         }
 
-        private void initializeFineCounter() {
+    private void initializeFineCounter() {
         int max = 0;
 
         for (int i = 1; i <= fineList.size(); i++) {
@@ -159,7 +179,6 @@ public class FineManagement {
                 }
             }
         }
-
         fineCounter = max + 1;
     }
 }

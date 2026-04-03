@@ -79,7 +79,18 @@ public class BorrowReturnBook {
         int pos = borrowRecordList.indexOf(probe);
 
         if (pos == -1) {
+            probe = new BorrowRecord(
+            studentId, "",
+            bookId, "",
+            null, "",
+            "EXPIRED"
+            );
+            pos = borrowRecordList.indexOf(probe);
+        }
+        
+        if (pos == -1) {
             return false;
+
         }
 
         BorrowRecord record = borrowRecordList.get(pos);
@@ -293,7 +304,7 @@ public class BorrowReturnBook {
         return studentId != null && studentId.matches("ST\\d{3,}");
     }
 
-    //YangMEIZUOOODOAODOADOAOSO
+    //Yang
     public BorrowRecord findBorrowRecordForFine(String studentId, String bookId) {
         for (int i = 1; i <= borrowRecordList.size(); i++) {
             BorrowRecord record = borrowRecordList.get(i);

@@ -9,7 +9,9 @@ package boundary;
 
 
 import control.BorrowReturnBook;
+import control.FineManagement;
 import entity.Book;
+import entity.Fine;
 import java.util.Scanner;
 
 public class BorrowReturnUI {
@@ -259,6 +261,7 @@ public class BorrowReturnUI {
 
         if (success) {
             System.out.println("Book returned successfully.");
+            handleFineAfterReturn(studentId, bookId);
         } else {
             System.out.println("Return failed. Record not found.");
         }
@@ -371,4 +374,37 @@ public class BorrowReturnUI {
         System.out.print("Press Enter to continue...");
         scanner.nextLine();
     }
+    
+    //Yang
+    private void handleFineAfterReturn(String studentID, String bookID) {
+        FineManagement fineControl = new FineManagement();
+
+        Fine fines = fineControl.findUnpaidFine(studentID, bookID);
+
+        if (fines == null) {
+            return;
+        }
+
+        System.out.println("\nYou have unpaid fines:");
+        System.out.println("Fine ID    : " + fines.getFineID());
+        System.out.println("Student ID : " + fines.getBorrowRecord().getBorrowerID());
+        System.out.println("Book ID    : " + fines.getBorrowRecord().getBookID());
+        System.out.println("Amount     : RM " + String.format("%.2f", fines.getAmount()));
+        System.out.println("Status     : " + fines.getStatus());
+        System.out.println("Overdue    : " + fines.getOverdueDays() + " day(s)");
+
+        System.out.print("Do you want to pay now? (Y/N): ");
+        String choice = scanner.nextLine();
+
+        if (choice.equalsIgnoreCase("Y")) {
+            System.out.print("Enter Fine ID: ");
+            String fineID = scanner.nextLine();
+
+            String result = fineControl.payFine(fineID);
+            System.out.println(result);
+        } else {
+            System.out.println("You can pay later in Fine Management.");
+        }
+    }
+    
 }

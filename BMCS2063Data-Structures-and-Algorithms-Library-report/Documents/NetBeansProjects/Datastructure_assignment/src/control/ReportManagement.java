@@ -16,8 +16,6 @@ import dao.BorrowRecordDAO;
 import entity.Book;
 import entity.BorrowRecord;
 import entity.Reservation;
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 
 public class ReportManagement {
 
@@ -40,94 +38,6 @@ public class ReportManagement {
 
     public ListInterface<Reservation> getReservationList() {
         return reservationList;
-    }
-
-    public String getCurrentReserveReport() {
-        StringBuilder output = new StringBuilder();
-
-        if (reservationList == null || reservationList.isEmpty()) {
-            return "No current reservation records.";
-        }
-
-        for (int i = 1; i <= reservationList.size(); i++) {
-            Reservation r = reservationList.get(i);
-
-            if (r != null
-                    && r.getStatus() != null
-                    && r.getStatus().equalsIgnoreCase("Active")) {
-
-                output.append(String.format("%-12s %-12s %-10s %-15s %-12s%n",
-                        r.getReservationID(),
-                        r.getStudent() != null ? r.getStudent().getStudentID() : "N/A",
-                        r.getBook() != null ? r.getBook().getBookID() : "N/A",
-                        r.getReservationDate(),
-                        r.getStatus()));
-            }
-        }
-
-        return output.length() == 0 ? "No current reservation records." : output.toString();
-    }
-
-    public String getBorrowedBooksReport() {
-        StringBuilder output = new StringBuilder();
-
-        if (borrowRecordList == null || borrowRecordList.isEmpty()) {
-            return "No borrowed books.";
-        }
-
-        for (int i = 1; i <= borrowRecordList.size(); i++) {
-            BorrowRecord r = borrowRecordList.get(i);
-
-            if (r != null
-                    && r.getStatus() != null
-                    && r.getStatus().equalsIgnoreCase("BORROWED")) {
-
-                output.append(String.format("%-10s %-12s %-10s %-15s %-15s %-10s%n",
-                        r.getRecordID(),
-                        r.getBorrowerID(),
-                        r.getBookID(),
-                        r.getBorrowDate(),
-                        r.getExpiryDate(),
-                        r.getStatus()));
-            }
-        }
-
-        return output.length() == 0 ? "No borrowed books." : output.toString();
-    }
-
-    public String getOverdueBooksReport() {
-        StringBuilder output = new StringBuilder();
-        LocalDate today = LocalDate.now();
-
-        if (borrowRecordList == null || borrowRecordList.isEmpty()) {
-            return "No overdue books.";
-        }
-
-        for (int i = 1; i <= borrowRecordList.size(); i++) {
-            BorrowRecord r = borrowRecordList.get(i);
-
-            if (r != null
-                    && r.getExpiryDate() != null
-                    && r.getStatus() != null
-                    && !r.getStatus().equalsIgnoreCase("RETURNED")) {
-
-                LocalDate expiryDate = LocalDate.parse(r.getExpiryDate());
-
-                if (today.isAfter(expiryDate)) {
-                    long overdueDays = ChronoUnit.DAYS.between(expiryDate, today);
-
-                    output.append(String.format("%-10s %-12s %-10s %-15s %-15s %-10s%n",
-                            r.getRecordID(),
-                            r.getBorrowerID(),
-                            r.getBookID(),
-                            r.getExpiryDate(),
-                            overdueDays,
-                            r.getStatus()));
-                }
-            }
-        }
-
-        return output.length() == 0 ? "No overdue books." : output.toString();
     }
 
     public String getMostBorrowedBooksReport() {
