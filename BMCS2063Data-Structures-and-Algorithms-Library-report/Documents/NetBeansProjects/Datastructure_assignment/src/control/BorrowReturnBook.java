@@ -449,7 +449,7 @@ public class BorrowReturnBook {
             return false;
         }
 
-        String result = reservationControl.reserveBook(studentId, bookId, studentName);
+        String result = reservationControl.reserveBook(studentId, bookId);
         System.out.println(result);
 
         return result.toLowerCase().contains("successful");
