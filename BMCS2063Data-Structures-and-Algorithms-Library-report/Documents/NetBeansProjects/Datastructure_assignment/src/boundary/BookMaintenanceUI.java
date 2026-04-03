@@ -47,6 +47,7 @@ public class BookMaintenanceUI {
         System.out.println("3.Remove book");
         System.out.println("4.Search book");
         System.out.println("5.Display all books");
+        System.out.println("6.Book maintenance report");
         System.out.println("0.Quit");
         return readMenuChoice("Staff Menu");
     }
@@ -66,6 +67,13 @@ public class BookMaintenanceUI {
         System.out.println("               List of Books             ");
         System.out.println("==================================================\n");
         System.out.println( outputStr);
+    }
+
+    public void showBookMaintenanceReport(String outputStr) {
+        System.out.println("\n==================================================");
+        System.out.println("            BOOK MAINTENANCE REPORT               ");
+        System.out.println("==================================================\n");
+        System.out.println(outputStr);
     }
     
     public void printBookDetails(Book book){
