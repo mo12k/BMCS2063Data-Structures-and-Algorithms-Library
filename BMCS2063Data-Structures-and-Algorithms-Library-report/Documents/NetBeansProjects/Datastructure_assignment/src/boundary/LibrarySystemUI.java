@@ -8,6 +8,7 @@ public class LibrarySystemUI {
     private Scanner scanner = new Scanner(System.in);
 
     private BookMaintenance bookMaintenance = new BookMaintenance();
+    private BookReservation bookReservation = new BookReservation();
     private BorrowReturnUI borrowReturnUI = new BorrowReturnUI();
     private FineManagementUI fineManagementUI = new FineManagementUI();
     private ReportUI reportUI = new ReportUI();
@@ -60,9 +61,12 @@ public class LibrarySystemUI {
                     borrowReturnUI.startStaffModule();
                     break;
                 case 3:
-                    fineManagementUI.startStaffModule();
+                    bookReservation.startStaffModule();
                     break;
                 case 4:
+                    fineManagementUI.startStaffModule();
+                    break;
+                case 5:
                     reportUI.startReportModule();
                     break;
                 case 0:
@@ -88,6 +92,9 @@ public class LibrarySystemUI {
                     borrowReturnUI.startStudentModule();
                     break;
                 case 3:
+                    bookReservation.startStudentModule();
+                    break;
+                case 4:
                     fineManagementUI.startStudentModule();
                     break;
                 case 0:
@@ -105,8 +112,9 @@ public class LibrarySystemUI {
         System.out.println("==================================================");
         System.out.println("1. Book Maintenance");
         System.out.println("2. Borrow / Return Management");
-        System.out.println("3. Fine Management");
-        System.out.println("4. Report Module");
+        System.out.println("3. Book Reservation & Waiting List");
+        System.out.println("4. Fine Management");
+        System.out.println("5. Report Module");
         System.out.println("0. Back");
         System.out.println("--------------------------------------------------");
         System.out.print("Enter choice: ");
@@ -119,7 +127,8 @@ public class LibrarySystemUI {
         System.out.println("==================================================");
         System.out.println("1. Search / Display Books");
         System.out.println("2. Borrow / Return Books");
-        System.out.println("3. Fine Management");
+        System.out.println("3. Reserve Books");
+        System.out.println("4. Fine Management");
         System.out.println("0. Back");
         System.out.println("--------------------------------------------------");
         System.out.print("Enter choice: ");
