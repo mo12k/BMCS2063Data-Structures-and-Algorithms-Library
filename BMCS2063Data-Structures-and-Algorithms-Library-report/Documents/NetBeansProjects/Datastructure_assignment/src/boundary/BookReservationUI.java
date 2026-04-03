@@ -8,10 +8,6 @@ public class BookReservationUI {
     private Scanner scanner = new Scanner(System.in);
     private BookReservation reservationControl;
 
-    public BookReservationUI(BookReservation reservationControl) {
-        this.reservationControl = reservationControl;
-    }
-
     public void startReservationModule() {
         int choice;
 

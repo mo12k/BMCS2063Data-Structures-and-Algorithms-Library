@@ -8,7 +8,7 @@ public class LibrarySystemUI {
     private Scanner scanner = new Scanner(System.in);
 
     private BookMaintenance bookMaintenance = new BookMaintenance();
-    private BookReservation bookReservation = new BookReservation();
+    private BookReservationUI bookReservationUI = new BookReservationUI();
     private BorrowReturnUI borrowReturnUI = new BorrowReturnUI();
     private FineManagementUI fineManagementUI = new FineManagementUI();
     private ReportUI reportUI = new ReportUI();
@@ -61,7 +61,7 @@ public class LibrarySystemUI {
                     borrowReturnUI.startStaffModule();
                     break;
                 case 3:
-                    bookReservation.startStaffModule();
+                    bookReservationUI.startStaffModule();
                     break;
                 case 4:
                     fineManagementUI.startStaffModule();
@@ -92,7 +92,7 @@ public class LibrarySystemUI {
                     borrowReturnUI.startStudentModule();
                     break;
                 case 3:
-                    bookReservation.startStudentModule();
+                    bookReservationUI.startStudentModule();
                     break;
                 case 4:
                     fineManagementUI.startStudentModule();
