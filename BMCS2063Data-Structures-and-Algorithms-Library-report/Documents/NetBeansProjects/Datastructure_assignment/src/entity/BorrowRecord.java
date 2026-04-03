@@ -26,6 +26,8 @@ public class BorrowRecord implements Serializable {
 
     private static int recordCount = 1;
 
+    public BorrowRecord() {
+    }
     public BorrowRecord(String borrowerID, String bookID,String studentName) {
         
         this.recordID = generateRecordID();
@@ -181,4 +183,22 @@ public class BorrowRecord implements Serializable {
                 expiryDate,
                 status);
     }
+    
+    public static BorrowRecord createProbe(String studentId, String bookId, String status) {
+    BorrowRecord record = new BorrowRecord ();
+    record.studentID = studentId;
+    record.bookID = bookId;
+    record.status = status;
+    return record;
+}
+    
+    public static void setNextRecordNumber(int nextNumber) {
+    if (nextNumber <= 0) {
+        recordCount = 1;
+    } else {
+        recordCount = nextNumber;
+    }
+}
+    
+    
 }

@@ -32,16 +32,18 @@ public class BorrowReturnBook {
     
     
     public BorrowReturnBook() {
-    bookList = bookDAO.retrieveFromFile();
-    borrowRecordList = borrowRecordDAO.retrieveFromFile();
 
-    initializeRecordCounter();
-
-    if (borrowRecordList.isEmpty()) {
-        initializeSampleRecord();
-        initializeRecordCounter();
+            bookList = bookDAO.retrieveFromFile();
+            borrowRecordList = borrowRecordDAO.retrieveFromFile();
+            
+         
+           if(borrowRecordList.isEmpty()){
+                   initializeSampleRecord();
+                    borrowRecordList = borrowRecordDAO.retrieveFromFile();
+           }
+           syncNextRecordIdFromLoadedData();
     }
-}
+
     
     public Book findBookById(String bookId) {
         if (bookId == null || bookId.trim().isEmpty()) {
@@ -80,15 +82,20 @@ public class BorrowReturnBook {
             return null;
         }
 
-        BorrowRecord probe = new BorrowRecord(
-            studentId, "", bookId, "", null, "", "BORROWED"
-        );
+
+        BorrowRecord probe = BorrowRecord.createProbe(
+            studentId,bookId,"BORROWED"
+            );
+
 
         int pos = borrowRecordList.indexOf(probe);
 
         if (pos == -1) {
-            probe = new BorrowRecord(
-                studentId, "", bookId, "", null, "", "EXPIRED"
+
+            probe =BorrowRecord.createProbe(
+            studentId,
+            bookId,
+            "EXPIRED"
             );
             pos = borrowRecordList.indexOf(probe);
         }
@@ -421,25 +428,8 @@ public class BorrowReturnBook {
     
     
     private boolean hasUnreturnedSameBook(String studentId, String bookId) {
-            BorrowRecord borrowedProbe = new BorrowRecord(
-                    studentId,
-                    "",
-                    bookId,
-                    "",
-                    null,
-                    "",
-                    "BORROWED"
-            );
-
-            BorrowRecord expiredProbe = new BorrowRecord(
-                    studentId,
-                    "",
-                    bookId,
-                    "",
-                    null,
-                    "",
-                    "EXPIRED"
-            );
+             BorrowRecord borrowedProbe = BorrowRecord.createProbe(studentId, bookId, "BORROWED");
+             BorrowRecord expiredProbe = BorrowRecord.createProbe(studentId, bookId, "EXPIRED");
 
             return borrowRecordList.contains(borrowedProbe)
                     || borrowRecordList.contains(expiredProbe);
@@ -556,5 +546,40 @@ public class BorrowReturnBook {
     private String safe(String text) {
             return text == null ? "" : text;
         }
+    
+    private void syncNextRecordIdFromLoadedData() {
+    int maxId = 0;
+
+    for (int i = 1; i <= borrowRecordList.size(); i++) {
+        BorrowRecord record = borrowRecordList.get(i);
+
+        if (record == null || record.getRecordID() == null) {
+            continue;
+        }
+
+        String id = record.getRecordID().trim();
+
+        
+        if (id.length() < 2 || id.charAt(0) != 'R') {
+            continue;
+        }
+
+        try {
+            int number = Integer.parseInt(id.substring(1)); // 去掉 R
+
+            if (number > maxId) {
+                maxId = number;
+            }
+
+        } catch (NumberFormatException e) {
+           
+        }
+    }
+
+   
+    BorrowRecord.setNextRecordNumber(maxId + 1);
+}
+    
+    
 
 }
