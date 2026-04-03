@@ -7,7 +7,15 @@ import java.util.Scanner;
 public class BorrowReturnUI {
 
     private Scanner scanner = new Scanner(System.in);
-    private BorrowReturnBook control = new BorrowReturnBook();
+    private BorrowReturnBook control;
+
+    public BorrowReturnUI(){
+        this.control = new BorrowReturnBook();
+    }
+
+    public BorrowReturnUI(control.BookReservation reservationControl){
+        this.control = new BorrowReturnBook(reservationControl);
+    }
 
     public void startBorrowReturnModule() {
         int choice;
@@ -83,6 +91,9 @@ public class BorrowReturnUI {
                 case 2:
                     returnBook();
                     break;
+                case 3:
+                    viewWaitingList();
+                    break;
                 case 0:
                     System.out.println("\nBack to previous menu...");
                     break;
@@ -109,6 +120,7 @@ public class BorrowReturnUI {
         System.out.println("==================================================");
         System.out.println("1. Borrow Book");
         System.out.println("2. Return Book");
+        System.out.println("3. View Waiting List");
         System.out.println("0. Back");
         System.out.println("--------------------------------------------------");
         System.out.print("Enter choice: ");
@@ -242,6 +254,34 @@ public class BorrowReturnUI {
         } else {
             System.out.println("Return failed. Record not found.");
         }
+
+        pause();
+    }
+
+    private void viewWaitingList() {
+    
+        System.out.println("\n==================================================");
+        System.out.println("                 VIEW WAITING LIST                ");
+        System.out.println("==================================================");
+
+        String keyword = inputSearchKeyword();
+
+        System.out.println("\nSearch Results:");
+        String resultBook = control.searchBookForWaitingList(keyword);
+
+        if (resultBook == null || resultBook.trim().isEmpty()) {
+            System.out.println("No matching books found.");
+            pause();
+            return;
+        }
+
+        System.out.println(resultBook);
+
+        String bookIdInput = inputBookId();
+        String bookId = bookIdInput.toUpperCase();
+
+        String waitingListResult = control.viewWaitingList(bookId);
+        System.out.println(waitingListResult);
 
         pause();
     }
