@@ -27,6 +27,8 @@ public class BookReservation {
         bookList = new DoublyLinkedList<>();
         studentList = new DoublyLinkedList<>();
         reservationList = new DoublyLinkedList<>();
+
+        preloadData();
     }
 
     private String generateReservationID() {
@@ -292,6 +294,20 @@ public class BookReservation {
 
     public void setReservationList(ListInterface<Reservation> reservationList) {
         this.reservationList = reservationList;
+    }
+
+    public void preloadData(){
+        studentList.add(new Student("S001", "Alice"));
+        studentList.add(new Student("S002", "Bob"));
+        studentList.add(new Student("S003", "Charlie"));
+
+        Book b1 = new Book("B001", "The Great Gatsby", "F. Scott Fitzgerald", 2018, 0);
+        Book b2 = new Book("B002", "To Kill a Mockingbird", "Harper Lee", 2015, 0);
+        Book b3 = new Book("B003", "1984", "George Orwell", 2016, 3);
+        
+        bookList.add(b1);
+        bookList.add(b2);
+        bookList.add(b3);
     }
 }
 

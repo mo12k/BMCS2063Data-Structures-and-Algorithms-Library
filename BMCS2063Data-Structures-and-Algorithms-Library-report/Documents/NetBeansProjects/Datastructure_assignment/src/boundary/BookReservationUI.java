@@ -9,6 +9,14 @@ public class BookReservationUI {
     private Scanner scanner = new Scanner(System.in);
     private BookReservation reservationControl;
 
+    public BookReservationUI() {
+        this.reservationControl = new BookReservation();
+    }
+
+    public BookReservationUI(BookReservation reservationControl) {
+        this.reservationControl = reservationControl;
+    }
+
     public void startStaffModule() {
         runStaffMenu();
     }
@@ -100,10 +108,7 @@ public class BookReservationUI {
         System.out.print("Enter Book ID: ");
         String bookID = scanner.nextLine().trim().toUpperCase();
 
-        System.out.print("Enter Student Name: ");
-        String studentName = scanner.nextLine().trim();
-
-        String result = reservationControl.reserveBook(studentID, bookID, studentName);
+        String result = reservationControl.reserveBook(studentID, bookID);
         System.out.println(result);
 
         UITools.pressEnterToContinue();
