@@ -14,14 +14,14 @@ public class TestUpdateRecord {
             BorrowRecord record = recordList.get(i);
 
             if (record != null
-                    && record.getRecordID().equalsIgnoreCase("R0011")
+                    && record.getRecordID().equalsIgnoreCase("R0014")
                     && record.getBorrowerID().equalsIgnoreCase("ST009")
                     && record.getBookID().equalsIgnoreCase("B0001")) {
 
                 record.setBorrowDate("2026-02-01");
                 record.setExpiryDate("2026-03-01");  
                 record.setReturnDate(null);
-                record.setStatus("EXPIRED");
+                record.setStatus("BORROWED");
 
                 System.out.println("Record updated:");
                 System.out.println(record);

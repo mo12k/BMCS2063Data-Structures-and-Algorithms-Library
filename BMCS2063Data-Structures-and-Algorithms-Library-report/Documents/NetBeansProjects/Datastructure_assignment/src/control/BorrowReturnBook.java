@@ -84,12 +84,14 @@ public class BorrowReturnBook {
             studentId, "", bookId, "", null, "", "BORROWED"
         );
 
+        probe.setRecordID(null);
         int pos = borrowRecordList.indexOf(probe);
 
         if (pos == -1) {
             probe = new BorrowRecord(
                 studentId, "", bookId, "", null, "", "EXPIRED"
             );
+            probe.setRecordID(null);
             pos = borrowRecordList.indexOf(probe);
         }
 
