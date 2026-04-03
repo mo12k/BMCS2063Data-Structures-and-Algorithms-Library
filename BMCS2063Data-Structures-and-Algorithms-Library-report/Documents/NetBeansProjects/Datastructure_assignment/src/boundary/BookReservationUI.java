@@ -8,54 +8,12 @@ public class BookReservationUI {
     private Scanner scanner = new Scanner(System.in);
     private BookReservation reservationControl;
 
-    public BookReservationUI(BookReservation reservationControl) {
-        this.reservationControl = reservationControl;
-    }
-
-    BookReservationUI() {
-         this.reservationControl = reservationControl;
-    }
-
-    public void startReservationModule() {
-        int choice;
-
-        do {
-            choice = getMainMenuChoice();
-
-            switch (choice) {
-                case 1:
-                    runStaffMenu();
-                    break;
-                case 2:
-                    runStudentMenu();
-                    break;
-                case 0:
-                    System.out.println("Exiting Reservation & Waiting List Module...");
-                    break;
-                default:
-                    System.out.println("Invalid choice. Please try again.");
-            }
-        } while (choice != 0);
-    }
-
     public void startStaffModule() {
         runStaffMenu();
     }
 
     public void startStudentModule() {
         runStudentMenu();
-    }
-
-    private int getMainMenuChoice() {
-        System.out.println("\n==================================================");
-        System.out.println("         RESERVATION & WAITING LIST MODULE        ");
-        System.out.println("==================================================");
-        System.out.println("1. Staff");
-        System.out.println("2. Student");
-        System.out.println("0. Exit");
-        System.out.println("--------------------------------------------------");
-        System.out.print("Enter choice: ");
-        return readInt();
     }
 
     private void runStaffMenu() {
@@ -66,21 +24,15 @@ public class BookReservationUI {
 
             switch (choice) {
                 case 1:
-                    reserveBook();
-                    break;
-                case 2:
-                    cancelReservation();
-                    break;
-                case 3:
                     viewWaitingList();
                     break;
-                case 4:
+                case 2:
                     notifyNextStudent();
                     break;
-                case 5:
+                case 3:
                     notifyDelay();
                     break;
-                case 6:
+                case 4:
                     notifyBookRemoval();
                     break;
                 case 0:
