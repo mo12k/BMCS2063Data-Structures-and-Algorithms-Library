@@ -103,11 +103,7 @@ public class BookMaintenance {
                     if (results.isEmpty()) {
                         System.out.println("No matching books found.");
                     } else {
-                        String outputStr = "";
-                        for (int i = 1; i <= results.size(); i++) {
-                            outputStr += results.get(i) + "\n";
-                        }
-                        bookUI.listAllBooks(outputStr);
+                        bookUI.listAllBooks(formatBooksForDisplay(results));
                     }
                 }
                 case 5 -> displayBooks();
@@ -129,11 +125,7 @@ public class BookMaintenance {
                     if (results.isEmpty()) {
                         System.out.println("No matching books found.");
                     } else {
-                        String outputStr = "";
-                        for (int i = 1; i <= results.size(); i++) {
-                            outputStr += results.get(i) + "\n";
-                        }
-                        bookUI.listAllBooks(outputStr);
+                        bookUI.listAllBooks(formatBooksForDisplay(results));
                     }
                 }
                 case 2 -> displayBooks();
@@ -257,11 +249,7 @@ public class BookMaintenance {
     }
     
     public String getAllBooks() {
-      String outputStr = "";
-      for (int i = 1; i <= bookList.size(); i++) {
-        outputStr += bookList.get(i) + "\n";
-      }
-      return outputStr;
+            return formatBooksForDisplay(bookList);
     }
     
     public void displayBooks(){
@@ -297,5 +285,43 @@ public class BookMaintenance {
 
     private void reloadData() {
         bookList = bookDAO.retrieveFromFile();
+    }
+
+    private String formatBooksForDisplay(ListInterface<Book> books) {
+        if (books == null || books.isEmpty()) {
+            return "No books found.";
+        }
+
+        String header = String.format("%-6s | %-30s | %-20s | %-12s | %-4s | %-3s | %-9s | %-7s",
+                "BookID", "Title", "Author", "Category", "Year", "Qty", "Available", "Waiting");
+        String line = "-".repeat(header.length());
+        StringBuilder output = new StringBuilder();
+
+        output.append(header).append("\n");
+        output.append(line).append("\n");
+
+        for (int i = 1; i <= books.size(); i++) {
+            Book book = books.get(i);
+            if (book == null) {
+                continue;
+            }
+
+            output.append(String.format("%-6s | %-30s | %-20s | %-12s | %-4d | %-3d | %-9s | %-7d",
+                    safe(book.getBookID()),
+                    safe(book.getTitle()),
+                    safe(book.getAuthor()),
+                    safe(book.getCategory()),
+                    book.getYearPublished(),
+                    book.getQuantity(),
+                    book.isIsAvailable() ? "Yes" : "No",
+                    book.getWaitingListCount()));
+            output.append("\n");
+        }
+
+        return output.toString();
+    }
+
+    private String safe(String text) {
+        return text == null ? "" : text;
     }
 }
