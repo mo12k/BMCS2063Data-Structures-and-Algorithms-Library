@@ -8,6 +8,7 @@ import adt.*;
 import boundary.BookMaintenanceUI;
 import entity.*;
 import dao.BookDAO;
+import dao.BorrowRecordDAO;
 import utility.MessageUI;
 
 /**
@@ -17,6 +18,7 @@ import utility.MessageUI;
 public class BookMaintenance {
     private ListInterface<Book> bookList = new DoublyLinkedList<>();
     private BookDAO bookDAO = new BookDAO();
+    private BorrowRecordDAO borrowRecordDAO = new BorrowRecordDAO();
     private BookMaintenanceUI bookUI = new BookMaintenanceUI();
     
     public BookMaintenance(){
@@ -104,11 +106,18 @@ public class BookMaintenance {
             switch (choice) {
                 case 0 -> MessageUI.displayExitMessage();
                 case 1 -> {
+                    displayBooks();
                     addNewBook();
                     displayBooks();
                 }
-                case 2 -> updateBookDetails();
-                case 3 -> removeBook();
+                case 2 -> {
+                    displayBooks();
+                    updateBookDetails();
+                }
+                case 3 -> {
+                    displayBooks();
+                    removeBook();
+                }
                 case 4 -> {
                     System.out.print("Enter Book (ID/Title/Author) to search: ");
                     String searchName = bookUI.getSearchInput();
@@ -189,12 +198,23 @@ public class BookMaintenance {
     }
     
     public void addNewBook(){
+        reloadData();
+
         Book newBook = bookUI.inputBookDetails();
+
+        if (bookList.contains(newBook)) {
+            System.out.println("Book already exists in the system.");
+            return;
+        }
+
         bookList.add(newBook);
         bookDAO.saveToFile(bookList);
+
+        System.out.println("Book added successfully.");
     }
 
     private void updateBookDetails() {
+        reloadData();
         String bookId = bookUI.inputBookId();
         int position = findBookPositionById(bookId);
         if (position == -1) {
@@ -228,6 +248,7 @@ public class BookMaintenance {
     }
 
     private void removeBook() {
+        reloadData();
         String bookId = bookUI.inputBookId();
         Book book = findBookById(bookId);
         if (book == null) {
@@ -235,11 +256,21 @@ public class BookMaintenance {
             return;
         }
 
+<<<<<<< Updated upstream
+=======
+        Book book = bookList.get(position);
+        if (book != null && hasActiveBorrowRecord(book.getBookID())) {
+            System.out.println("Cannot remove book. This book is currently borrowed by a student.");
+            return;
+        }
+
+>>>>>>> Stashed changes
         bookUI.printBookDetails(book);
         if (!bookUI.confirm("Remove this book?") ) {
             return;
         }
 
+<<<<<<< Updated upstream
         if (bookList.remove(book)) {
             bookDAO.saveToFile(bookList);
             System.out.println("Book removed.");
@@ -265,6 +296,11 @@ public class BookMaintenance {
             }
         }
         return null;
+=======
+        bookList.remove(book);
+        bookDAO.saveToFile(bookList);
+        System.out.println("Book removed.");
+>>>>>>> Stashed changes
     }
 
     private int findBookPositionById(String bookId) {
@@ -277,10 +313,12 @@ public class BookMaintenance {
         }
         for (int i = 1; i <= bookList.size(); i++) {
             Book book = bookList.get(i);
-            if (book != null && book.getBookID() != null && book.getBookID().equalsIgnoreCase(needle)) {
-                return i;
+
+            if (book != null && book.getBookID().equalsIgnoreCase(bookId)) {
+                return bookList.indexOf(book);
             }
         }
+
         return -1;
     }
     
@@ -293,11 +331,37 @@ public class BookMaintenance {
     }
     
     public void displayBooks(){
+        reloadData();
         bookUI.listAllBooks(getAllBooks());
     }
-    
-    public static void main(String[] args){
-        BookMaintenance bookMaintenance = new BookMaintenance();
-        bookMaintenance.startRunLibrary();
+
+    private boolean hasActiveBorrowRecord(String bookId) {
+        if (bookId == null || bookId.trim().isEmpty()) {
+            return false;
+        }
+
+        ListInterface<BorrowRecord> borrowRecords = borrowRecordDAO.retrieveFromFile();
+        String normalizedBookId = bookId.trim();
+
+        for (int i = 1; i <= borrowRecords.size(); i++) {
+            BorrowRecord record = borrowRecords.get(i);
+            if (record == null || record.getBookID() == null || record.getStatus() == null) {
+                continue;
+            }
+
+            boolean sameBook = record.getBookID().equalsIgnoreCase(normalizedBookId);
+            boolean isActive = record.getStatus().equalsIgnoreCase("BORROWED")
+                    || record.getStatus().equalsIgnoreCase("EXPIRED");
+
+            if (sameBook && isActive) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private void reloadData() {
+        bookList = bookDAO.retrieveFromFile();
     }
 }

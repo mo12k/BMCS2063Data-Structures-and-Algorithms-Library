@@ -177,7 +177,7 @@ public class DoublyLinkedList<T> implements ListInterface<T>, Serializable {
         head = null;
         tail = null;
         size = 0;
-    }
+    }   
 
     
     public boolean replace(int givenPosition, T newEntry) {
