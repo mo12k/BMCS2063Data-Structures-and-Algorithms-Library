@@ -16,6 +16,10 @@ import utility.MessageUI;
  * @author Mok
  */
 public class BookMaintenance {
+    private static final int TITLE_COL_WIDTH = 45;
+    private static final int AUTHOR_COL_WIDTH = 20;
+    private static final int CATEGORY_COL_WIDTH = 20;
+
     private ListInterface<Book> bookList = new DoublyLinkedList<>();
     private BookDAO bookDAO = new BookDAO();
     private BorrowRecordDAO borrowRecordDAO = new BorrowRecordDAO();
@@ -292,7 +296,7 @@ public class BookMaintenance {
             return "No books found.";
         }
 
-        String header = String.format("%-6s | %-30s | %-20s | %-12s | %-4s | %-3s | %-9s | %-7s",
+        String header = String.format("%-6s | %-" + TITLE_COL_WIDTH + "s | %-" + AUTHOR_COL_WIDTH + "s | %-" + CATEGORY_COL_WIDTH + "s | %-4s | %-3s | %-9s | %-7s",
                 "BookID", "Title", "Author", "Category", "Year", "Qty", "Available", "Waiting");
         String line = "-".repeat(header.length());
         StringBuilder output = new StringBuilder();
@@ -306,7 +310,7 @@ public class BookMaintenance {
                 continue;
             }
 
-            output.append(String.format("%-6s | %-30s | %-20s | %-12s | %-4d | %-3d | %-9s | %-7d",
+                output.append(String.format("%-6s | %-" + TITLE_COL_WIDTH + "s | %-" + AUTHOR_COL_WIDTH + "s | %-" + CATEGORY_COL_WIDTH + "s | %-4d | %-3d | %-9s | %-7d",
                     safe(book.getBookID()),
                     safe(book.getTitle()),
                     safe(book.getAuthor()),
