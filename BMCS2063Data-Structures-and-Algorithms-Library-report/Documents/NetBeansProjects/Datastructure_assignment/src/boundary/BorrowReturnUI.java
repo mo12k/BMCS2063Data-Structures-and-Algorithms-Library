@@ -246,7 +246,7 @@ public class BorrowReturnUI {
         }
 
         String records = control.getActiveBorrowRecordStringByStudent(studentId);
-
+        
         if (records == null || records.trim().isEmpty()) {
             System.out.println("No active borrowed records found for this student.");
             return;
@@ -254,6 +254,11 @@ public class BorrowReturnUI {
 
         System.out.println("\nYour Active Borrowed Records:");
         System.out.println(records);
+        
+        
+        if (records == "No borrow records found." ) {
+            return;
+        }
 
         String bookIdInput = inputBookId();
         String bookId = bookIdInput.toUpperCase();

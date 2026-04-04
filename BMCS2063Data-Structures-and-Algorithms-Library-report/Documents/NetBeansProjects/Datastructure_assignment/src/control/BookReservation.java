@@ -1,37 +1,32 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-
 package control;
-
-/**
- *
- * @author lamzh
- */
 
 import adt.DoublyLinkedList;
 import adt.ListInterface;
 import dao.BookDAO;
+import dao.BorrowRecordDAO;
 import entity.Book;
-import entity.Student;
 import entity.Reservation;
+import entity.BorrowRecord;
 
 public class BookReservation {
 
     private ListInterface<Book> bookList;
-    private ListInterface<Student> studentList;
     private ListInterface<Reservation> reservationList;
+
     private BookDAO bookDAO;
+    private BorrowRecordDAO borrowRecordDAO;
+    private ListInterface<BorrowRecord> borrowRecordList;
+
     private static int reservationCount = 1;
 
     public BookReservation() {
         bookDAO = new BookDAO();
-        bookList = new DoublyLinkedList<>();
-        studentList = new DoublyLinkedList<>();
-        reservationList = new DoublyLinkedList<>();
+        borrowRecordDAO = new BorrowRecordDAO();
+
         bookList = bookDAO.retrieveFromFile();
-        
+        reservationList = new DoublyLinkedList<>();
+        borrowRecordList = borrowRecordDAO.retrieveFromFile();
+
         if (bookList.isEmpty()) {
             bookDAO.saveToFile(bookList);
         }
@@ -42,29 +37,10 @@ public class BookReservation {
     }
 
     private Book findBookById(String bookID) {
-        if (bookID == null) {
-            return null;
-        }
-
-        String normalizedBookID = bookID.trim();
-        if (normalizedBookID.isEmpty()) {
-            return null;
-        }
-
         for (int i = 1; i <= bookList.size(); i++) {
-            Book book = bookList.get(i);
-            if (book != null && book.getBookID() != null && book.getBookID().equalsIgnoreCase(normalizedBookID)) {
-                return book;
-            }
-        }
-        return null;
-    }
-
-    private Student findStudentById(String studentID) {
-        for (int i = 1; i <= studentList.size(); i++) {
-            Student student = studentList.get(i);
-            if (student != null && student.getStudentID().equalsIgnoreCase(studentID)) {
-                return student;
+            Book b = bookList.get(i);
+            if (b != null && b.getBookID().equalsIgnoreCase(bookID)) {
+                return b;
             }
         }
         return null;
@@ -75,12 +51,10 @@ public class BookReservation {
             Reservation r = reservationList.get(i);
 
             if (r != null
-                && r.getStudent() != null
-                && r.getBook() != null
-                && r.getStudent().getStudentID().equalsIgnoreCase(studentID)
-                && r.getBook().getBookID().equalsIgnoreCase(bookID)
-                && !"Cancelled".equalsIgnoreCase(r.getStatus())
-                && !"Book Removed".equalsIgnoreCase(r.getStatus())) {
+                    && r.getStudentID().equalsIgnoreCase(studentID)
+                    && r.getBook().getBookID().equalsIgnoreCase(bookID)
+                    && !"Cancelled".equalsIgnoreCase(r.getStatus())
+                    && !"Book Removed".equalsIgnoreCase(r.getStatus())) {
                 return r;
             }
         }
@@ -89,240 +63,215 @@ public class BookReservation {
 
     private boolean hasDuplicateReservation(String studentID, String bookID) {
         for (int i = 1; i <= reservationList.size(); i++) {
-        Reservation r = reservationList.get(i);
+            Reservation r = reservationList.get(i);
 
-        if (r != null
-                && r.getStudent() != null
-                && r.getBook() != null
-                && r.getStudent().getStudentID().equalsIgnoreCase(studentID)
-                && r.getBook().getBookID().equalsIgnoreCase(bookID)
-                && !"Cancelled".equalsIgnoreCase(r.getStatus())
-                && !"Book Removed".equalsIgnoreCase(r.getStatus())
-                && !"Notified".equalsIgnoreCase(r.getStatus())) {
+            if (r != null
+                    && r.getStudentID().equalsIgnoreCase(studentID)
+                    && r.getBook().getBookID().equalsIgnoreCase(bookID)
+                    && !"Cancelled".equalsIgnoreCase(r.getStatus())
+                    && !"Book Removed".equalsIgnoreCase(r.getStatus())
+                    && !"Notified".equalsIgnoreCase(r.getStatus())) {
                 return true;
             }
         }
-        return false;
-    }
-
-    private boolean removeStudentFromWaitingList(Book book, String studentID) {
-        ListInterface<Student> waitingList = book.getWaitingList();
-
-        for (int i = 1; i <= waitingList.size(); i++) {
-            Student s = waitingList.get(i);
-
-            if (s != null && s.getStudentID().equalsIgnoreCase(studentID)) {
-                waitingList.remove(i);
-                return true;
-            }
-        }
-
         return false;
     }
 
     private String getCurrentDate() {
-        java.time.LocalDate today = java.time.LocalDate.now();
-        return today.toString();
+        return java.time.LocalDate.now().toString();
     }
-    
-    public String reserveBook(String studentID, String bookID) {
-        Student student = findStudentById(studentID);
-        System.out.println(getStudentList()+"It is empty");
-        if (student == null) {
-            return "Reservation failed. This student does not exist.";
+
+    // 🔥 找 BorrowRecord name
+    private String findStudentNameFromBorrowRecord(String studentID) {
+        for (int i = 1; i <= borrowRecordList.size(); i++) {
+            BorrowRecord r = borrowRecordList.get(i);
+
+            if (r != null
+                    && r.getBorrowerID().equalsIgnoreCase(studentID)
+                    && r.getBorrowName() != null
+                    && !r.getBorrowName().isEmpty()) {
+                return r.getBorrowName();
+            }
         }
+        return null;
+    }
+
+    // 🔥 user input name
+    private String promptStudentName() {
+        java.util.Scanner sc = new java.util.Scanner(System.in);
+        String name;
+
+        do {
+            System.out.print("Enter student name: ");
+            name = sc.nextLine().trim();
+        } while (name.isEmpty());
+
+        return name;
+    }
+
+    // =========================
+    // ✅ RESERVE BOOK (重點)
+    // =========================
+    public String reserveBook(String studentID, String bookID) {
 
         Book book = findBookById(bookID);
         if (book == null) {
-            return "Reservation failed. This book does not exist.";
+            return "Book not found.";
         }
 
         if (book.isIsAvailable()) {
-            return "Reservation is not necessary. The book currently available to borrow.";
+            return "Book is available. No need reserve.";
         }
 
         if (hasDuplicateReservation(studentID, bookID)) {
-            return "Reservation failed. This student is reserved this book within waiting list.";
+            return "Already reserved.";
         }
 
-        book.getWaitingList().add(student);
+        // 🔥 找名字
+        String studentName = findStudentNameFromBorrowRecord(studentID);
 
-        Reservation reservation = new Reservation(generateReservationID(), book, student, getCurrentDate(), "Active");
+        if (studentName == null) {
+            studentName = promptStudentName();
+        }
 
-        reservationList.add(reservation);
+        // 🔥 waiting list 改 String
+        book.getWaitingList().add(studentID + " - " + studentName);
+
+        Reservation r = new Reservation(
+                generateReservationID(),
+                book,
+                studentID,
+                studentName,
+                getCurrentDate(),
+                "Active"
+        );
+
+        reservationList.add(r);
         bookDAO.saveToFile(bookList);
 
-        return "Reservation successful. " + student.getStudentName() + 
-               " has been added to the waiting list for \"" + book.getTitle() + 
-               "\".";}
-
-    public String cancelReservation(String studentID, String bookID) {
-        Student student = findStudentById(studentID);
-        if (student == null) {
-            return "Cancellation failed. Student does not exist.";
-        }
-
-        Book book = findBookById(bookID);
-        if (book == null) {
-            return "Cancellation failed. Book does not exist.";
-        }
-
-        Reservation reservation = findReservation(studentID, bookID);
-        if (reservation == null) {
-            return "Cancellation failed. Reservation record not found.";
-        }
-
-        boolean removed = removeStudentFromWaitingList(book, studentID);
-        if (!removed) {
-            return "Cancellation failed. Student is not in the waiting list.";
-        }
-
-        reservation.setStatus("Cancelled");
-        bookDAO.saveToFile(bookList);
-
-        return "Reservation cancelled successfully. \n" + student.getStudentName() +
-               " has been removed from the waiting list for \"" + book.getTitle() + 
-               "\".";
+        return "Reservation success for " + studentName;
     }
 
-    public String viewWaitingList(String bookID) {
+    // =========================
+    // CANCEL
+    // =========================
+    public String cancelReservation(String studentID, String bookID) {
+
         Book book = findBookById(bookID);
+        if (book == null) return "Book not found";
 
-        if (book == null) {
-            return "View waiting list failed. Book does not exist.";
-        }
-
-        if (book.getWaitingList() == null || book.getWaitingList().isEmpty()) {
-            return "Waiting list is empty for book \"" + book.getTitle() + "\".";
-        }
-
-        StringBuilder output = new StringBuilder();
-        output.append("Waiting List for \"")
-              .append(book.getTitle())
-              .append("\" (")
-              .append(book.getBookID())
-              .append("):\n");
+        Reservation r = findReservation(studentID, bookID);
+        if (r == null) return "No reservation";
 
         for (int i = 1; i <= book.getWaitingList().size(); i++) {
-            Student student = book.getWaitingList().get(i);
-            output.append(i)
-                  .append(". ")
-                  .append(student.getStudentID())
-                  .append(" - ")
-                  .append(student.getStudentName())
-                  .append("\n");
-        }
+            String s = book.getWaitingList().get(i);
 
-        return output.toString();
-    }
-
-    public String notifyNextStudent(String bookID) {
-        Book book = findBookById(bookID);
-
-        if (book == null) {
-            return "Notification failed. Book does not exist.";
-        }
-
-        if (book.getWaitingList() == null || book.getWaitingList().isEmpty()) {
-            return "No notification performed. Waiting list is empty, and admin is informed.";
-        }
-
-        Student nextStudent = book.getWaitingList().get(1);
-        book.getWaitingList().remove(1);
-
-        Reservation reservation = findReservation(nextStudent.getStudentID(), bookID);
-        if (reservation != null) {
-            reservation.setStatus("Notified");
-        }
-
-        bookDAO.saveToFile(bookList);
-
-        return "Notification sent to " + nextStudent.getStudentName() + 
-               " (" + nextStudent.getStudentID() + 
-               ") for book \"" + book.getTitle() + "\".";
-    }
-
-    public String notifyDelay(String bookID) {
-        Book book = findBookById(bookID);
-
-        if (book == null) {
-            return "Delay notification failed. Book does not exist.";
-        }
-
-        if (book.getWaitingList() == null || book.getWaitingList().isEmpty()) {
-            return "No delay notification performed. Waiting list is empty.";
-        }
-
-        Student nextStudent = book.getWaitingList().get(1);
-
-        Reservation reservation = findReservation(nextStudent.getStudentID(), bookID);
-        if (reservation != null) {
-            reservation.setStatus("Delayed");
-        }
-
-        bookDAO.saveToFile(bookList);
-
-        return "Delay notification sent to " + nextStudent.getStudentName() + 
-               " (" + nextStudent.getStudentID() + 
-               ") for book \"" + book.getTitle() + "\".";
-    }
-
-    public String notifyBookRemoval(String bookID) {
-        Book book = findBookById(bookID);
-
-        if (book == null) {
-            return "Book removal notification failed. Book does not exist.";
-        }
-
-        if (book.getWaitingList() == null || book.getWaitingList().isEmpty()) {
-            return "No students to notify. Waiting list is empty for book \"" + book.getTitle() + "\".";
-        }
-
-        int count = book.getWaitingList().size();
-
-        for (int i = 1; i <= count; i++) {
-            Student student = book.getWaitingList().get(i);
-            Reservation reservation = findReservation(student.getStudentID(), bookID);
-
-            if (reservation != null) {
-                reservation.setStatus("Book Removed");
+            if (s.startsWith(studentID)) {
+                book.getWaitingList().remove(i);
+                break;
             }
         }
 
-        book.getWaitingList().clear();
+        r.setStatus("Cancelled");
         bookDAO.saveToFile(bookList);
 
-        return count + " student(s) notified that book \"" + book.getTitle() + "\" has been removed.";
+        return "Cancelled";
+    }
+
+    // =========================
+    // VIEW WAITING LIST
+    // =========================
+    public String viewWaitingList(String bookID) {
+
+        Book book = findBookById(bookID);
+        if (book == null) return "Book not found";
+
+        if (book.getWaitingList().isEmpty()) {
+            return "Empty waiting list";
+        }
+
+        String output = "";
+
+        for (int i = 1; i <= book.getWaitingList().size(); i++) {
+            output += i + ". " + book.getWaitingList().get(i) + "\n";
+        }
+
+        return output;
+    }
+
+    // =========================
+    // NOTIFY NEXT
+    // =========================
+    public String notifyNextStudent(String bookID) {
+
+        Book book = findBookById(bookID);
+        if (book == null) return "Book not found";
+
+        if (book.getWaitingList().isEmpty()) return "No waiting";
+
+        String entry = book.getWaitingList().get(1);
+        book.getWaitingList().remove(1);
+
+        String studentID = entry.split(" - ")[0];
+
+        Reservation r = findReservation(studentID, bookID);
+        if (r != null) {
+            r.setStatus("Notified");
+        }
+
+        return "Notified: " + entry;
     }
     
-    public ListInterface<Book> getBookList() {
-        return bookList;
+    public String notifyBookRemoval(String bookID) {
+
+    Book book = findBookById(bookID);
+    if (book == null) return "Book not found";
+
+    if (book.getWaitingList().isEmpty()) {
+        return "No waiting list";
     }
 
-    public void setBookList(ListInterface<Book> bookList) {
-        this.bookList = bookList;
+    int count = book.getWaitingList().size();
+
+    for (int i = 1; i <= count; i++) {
+
+        String entry = book.getWaitingList().get(i);
+        String studentID = entry.split(" - ")[0];
+
+        Reservation r = findReservation(studentID, bookID);
+
+        if (r != null) {
+            r.setStatus("Book Removed");
+        }
     }
 
-    public ListInterface<Student> getStudentList() {
-        return studentList;
-    }
+    // 🔥 清空 waiting list
+    book.getWaitingList().clear();
 
-    public void setStudentList(ListInterface<Student> studentList) {
-        this.studentList = studentList;
-    }
+    bookDAO.saveToFile(bookList);
 
-    public ListInterface<Reservation> getReservationList() {
-        return reservationList;
-    }
-
-    public void setReservationList(ListInterface<Reservation> reservationList) {
-        this.reservationList = reservationList;
-    }
-    
-    public ListInterface<Student> getAllBooks() {
-            return (studentList);
-    }
-
-    
+    return count + " students notified. Book removed.";
 }
+    
+    public String notifyDelay(String bookID) {
 
+    Book book = findBookById(bookID);
+    if (book == null) return "Book not found";
+
+    if (book.getWaitingList().isEmpty()) {
+        return "No waiting list";
+    }
+
+    // 取得第一個人（不移除）
+    String entry = book.getWaitingList().get(1);
+
+    String studentID = entry.split(" - ")[0];
+
+    Reservation r = findReservation(studentID, bookID);
+    if (r != null) {
+        r.setStatus("Delayed");
+    }
+
+    return "Delay notification sent to: " + entry;
+}
+}

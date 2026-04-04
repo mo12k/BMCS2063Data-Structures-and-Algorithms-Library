@@ -15,7 +15,7 @@ public class Book implements Serializable {
     private int yearPublished;
     private int quantity;
     private boolean isAvailable;
-    private ListInterface<Student> waitingList;
+    private ListInterface<String> waitingList;
 
     private static int BookCount = 1;
 
@@ -102,11 +102,11 @@ public class Book implements Serializable {
         this.isAvailable = isAvailable;
     }
 
-    public ListInterface<Student> getWaitingList() {
+    public ListInterface<String> getWaitingList() {
         return waitingList;
     }
 
-    public void setWaitingList(ListInterface<Student> waitingList) {
+    public void setWaitingList(ListInterface<String> waitingList) {
         this.waitingList = waitingList;
     }
 
