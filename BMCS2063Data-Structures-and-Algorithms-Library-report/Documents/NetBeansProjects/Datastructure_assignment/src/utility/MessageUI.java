@@ -18,6 +18,10 @@ public class MessageUI {
   public static void displayExitMessage() {
     System.out.println("\nExiting system");
   }
+
+  public static void displayMessage(String message) {
+    System.out.println(message);
+  }
   
 }
 

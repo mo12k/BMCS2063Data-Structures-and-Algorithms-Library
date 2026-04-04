@@ -7,7 +7,7 @@ package boundary;
 
 import entity.Book;
 import java.util.Scanner;
-import utility.UITools;
+
 
 /**
  *
@@ -47,6 +47,7 @@ public class BookMaintenanceUI {
         System.out.println("3.Remove book");
         System.out.println("4.Search book");
         System.out.println("5.Display all books");
+        System.out.println("6.Book maintenance report");
         System.out.println("0.Quit");
         return readMenuChoice("Staff Menu");
     }
@@ -67,6 +68,13 @@ public class BookMaintenanceUI {
         System.out.println("==================================================\n");
         System.out.println( outputStr);
     }
+
+    public void showBookMaintenanceReport(String outputStr) {
+        System.out.println("\n==================================================");
+        System.out.println("            BOOK MAINTENANCE REPORT               ");
+        System.out.println("==================================================\n");
+        System.out.println(outputStr);
+    }
     
     public void printBookDetails(Book book){
         if (book == null) {
@@ -84,7 +92,12 @@ public class BookMaintenanceUI {
     }
 
     public String getSearchInput() {
+        System.out.print("Enter Book (ID/Title/Author) to search: ");
         return scan.nextLine();
+    }
+
+    public void displayMessage(String message) {
+        System.out.println(message);
     }
     
     public String inputBookName(){
@@ -142,6 +155,8 @@ public class BookMaintenanceUI {
         }
     }
     
+
+
     public int inputQuantity() {
         while (true) {
             System.out.print("Enter quantity: ");
@@ -172,6 +187,8 @@ public class BookMaintenanceUI {
             System.out.println("Invalid input. Enter Y or N.");
         }
     }
+    
+
 
     public Book inputBookDetails(){
         String title = inputBookTitle();
