@@ -101,16 +101,16 @@ public class BookMaintenance {
                     removeBook();
                 }
                 case 4 -> {
-                    System.out.print("Enter Book (ID/Title/Author) to search: ");
                     String searchName = bookUI.getSearchInput();
                     ListInterface<Book> results = searchBook(searchName);
                     if (results.isEmpty()) {
-                        System.out.println("No matching books found.");
+                        bookUI.displayMessage("No matching books found.");
                     } else {
                         bookUI.listAllBooks(formatBooksForDisplay(results));
                     }
                 }
                 case 5 -> displayBooks();
+                case 6 -> displayReport();
                 default -> MessageUI.displayInvalidChoiceMessage();
             }
         } while (choice != 0);
@@ -123,11 +123,10 @@ public class BookMaintenance {
             switch (choice) {
                 case 0 -> MessageUI.displayExitMessage();
                 case 1 -> {
-                    System.out.print("Enter Book (ID/Title/Author) to search: ");
                     String searchName = bookUI.getSearchInput();
                     ListInterface<Book> results = searchBook(searchName);
                     if (results.isEmpty()) {
-                        System.out.println("No matching books found.");
+                        bookUI.displayMessage("No matching books found.");
                     } else {
                         bookUI.listAllBooks(formatBooksForDisplay(results));
                     }
@@ -164,14 +163,14 @@ public class BookMaintenance {
         Book newBook = bookUI.inputBookDetails();
 
         if (bookList.contains(newBook)) {
-            System.out.println("Book already exists in the system.");
+            bookUI.displayMessage("Book already exists in the system.");
             return;
         }
 
         bookList.add(newBook);
         bookDAO.saveToFile(bookList);
 
-        System.out.println("Book added successfully.");
+        bookUI.displayMessage("Book added successfully.");
     }
 
     private void updateBookDetails() {
@@ -179,7 +178,7 @@ public class BookMaintenance {
         String bookId = bookUI.inputBookId();
         int position = findBookPositionById(bookId);
         if (position == -1) {
-            System.out.println("Book not found.");
+            bookUI.displayMessage("Book not found.");
             return;
         }
 
@@ -205,7 +204,7 @@ public class BookMaintenance {
 
         bookList.set(position, book);
         bookDAO.saveToFile(bookList);
-        System.out.println("Book updated.");
+        bookUI.displayMessage("Book updated.");
     }
 
     private void removeBook() {
@@ -213,13 +212,13 @@ public class BookMaintenance {
         String bookId = bookUI.inputBookId();
         int position = findBookPositionById(bookId);
         if (position == -1) {
-            System.out.println("Book not found.");
+            bookUI.displayMessage("Book not found.");
             return;
         }
 
         Book book = bookList.get(position);
         if (book != null && hasActiveBorrowRecord(book.getBookID())) {
-            System.out.println("Cannot remove book. This book is currently borrowed by a student.");
+            bookUI.displayMessage("Cannot remove book. This book is currently borrowed by a student.");
             return;
         }
 
@@ -230,7 +229,7 @@ public class BookMaintenance {
 
         bookList.remove(book);
         bookDAO.saveToFile(bookList);
-        System.out.println("Book removed.");
+        bookUI.displayMessage("Book removed.");
     }
 
     private int findBookPositionById(String bookId) {
@@ -261,6 +260,11 @@ public class BookMaintenance {
         bookUI.listAllBooks(getAllBooks());
     }
 
+    public void displayReport() {
+        reloadData();
+        bookUI.showBookMaintenanceReport(getBookMaintenanceReport());
+    }
+
     private boolean hasActiveBorrowRecord(String bookId) {
         if (bookId == null || bookId.trim().isEmpty()) {
             return false;
@@ -289,6 +293,82 @@ public class BookMaintenance {
 
     private void reloadData() {
         bookList = bookDAO.retrieveFromFile();
+    }
+
+    public String getBookMaintenanceReport() {
+        if (bookList == null || bookList.isEmpty()) {
+            return "No book records found.";
+        }
+
+        int totalTitles = 0;
+        int totalQuantity = 0;
+        int availableTitles = 0;
+        int unavailableTitles = 0;
+        int lowStockTitles = 0;
+        int waitingListTotal = 0;
+        int highestWaitingCount = -1;
+        Book highestWaitingBook = null;
+        StringBuilder lowStockDetails = new StringBuilder();
+
+        for (int i = 1; i <= bookList.size(); i++) {
+            Book book = bookList.get(i);
+            if (book == null) {
+                continue;
+            }
+
+            totalTitles++;
+            totalQuantity += book.getQuantity();
+
+            if (book.isIsAvailable()) {
+                availableTitles++;
+            } else {
+                unavailableTitles++;
+            }
+
+            if (book.getQuantity() <= 3) {
+                lowStockTitles++;
+                lowStockDetails.append(String.format("%-6s %-40s %-5d%n",
+                        safe(book.getBookID()),
+                        trimText(safe(book.getTitle()), 40),
+                        book.getQuantity()));
+            }
+
+            int waitingCount = book.getWaitingListCount();
+            waitingListTotal += waitingCount;
+            if (waitingCount > highestWaitingCount) {
+                highestWaitingCount = waitingCount;
+                highestWaitingBook = book;
+            }
+        }
+
+        double averageQuantity = totalTitles == 0 ? 0.0 : (double) totalQuantity / totalTitles;
+        StringBuilder output = new StringBuilder();
+
+        output.append(String.format("Total book titles      : %d%n", totalTitles));
+        output.append(String.format("Total copies           : %d%n", totalQuantity));
+        output.append(String.format("Available titles       : %d%n", availableTitles));
+        output.append(String.format("Unavailable titles     : %d%n", unavailableTitles));
+        output.append(String.format("Low stock titles (<=3) : %d%n", lowStockTitles));
+        output.append(String.format("Waiting list total     : %d%n", waitingListTotal));
+        output.append(String.format("Average quantity/title : %.2f%n", averageQuantity));
+
+        if (highestWaitingBook != null) {
+            output.append(String.format("Highest waiting list   : %s (%s) - %d student(s)%n",
+                    safe(highestWaitingBook.getBookID()),
+                    safe(highestWaitingBook.getTitle()),
+                    highestWaitingCount));
+        }
+
+        output.append("\nLow stock books (quantity <= 3):\n");
+        if (lowStockDetails.length() == 0) {
+            output.append("No low stock books found.\n");
+        } else {
+            output.append(String.format("%-6s %-40s %-5s%n", "BookID", "Title", "Qty"));
+            output.append("--------------------------------------------------------------\n");
+            output.append(lowStockDetails);
+        }
+
+        return output.toString();
     }
 
     private String formatBooksForDisplay(ListInterface<Book> books) {
@@ -327,5 +407,15 @@ public class BookMaintenance {
 
     private String safe(String text) {
         return text == null ? "" : text;
+    }
+
+    private String trimText(String text, int maxLength) {
+        if (text == null) {
+            return "";
+        }
+        if (maxLength <= 0 || text.length() <= maxLength) {
+            return text;
+        }
+        return text.substring(0, maxLength - 3) + "...";
     }
 }
