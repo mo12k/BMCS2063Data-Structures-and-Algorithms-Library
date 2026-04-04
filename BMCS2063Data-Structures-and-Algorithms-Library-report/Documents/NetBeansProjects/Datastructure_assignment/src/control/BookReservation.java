@@ -12,6 +12,7 @@ package control;
 
 import adt.DoublyLinkedList;
 import adt.ListInterface;
+import dao.BookDAO;
 import entity.Book;
 import entity.Student;
 import entity.Reservation;
@@ -21,14 +22,22 @@ public class BookReservation {
     private ListInterface<Book> bookList;
     private ListInterface<Student> studentList;
     private ListInterface<Reservation> reservationList;
+    private BookDAO bookDAO;
     private static int reservationCount = 1;
 
     public BookReservation() {
+        bookDAO = new BookDAO();
         bookList = new DoublyLinkedList<>();
         studentList = new DoublyLinkedList<>();
         reservationList = new DoublyLinkedList<>();
 
-        preloadData();
+        preloadStudents();
+
+        bookList = bookDAO.retrieveFromFile();
+        if (bookList.isEmpty()) {
+            preloadBooks();
+            bookDAO.saveToFile(bookList);
+        }
     }
 
     private String generateReservationID() {
@@ -36,9 +45,18 @@ public class BookReservation {
     }
 
     private Book findBookById(String bookID) {
+        if (bookID == null) {
+            return null;
+        }
+
+        String normalizedBookID = bookID.trim();
+        if (normalizedBookID.isEmpty()) {
+            return null;
+        }
+
         for (int i = 1; i <= bookList.size(); i++) {
             Book book = bookList.get(i);
-            if (book != null && book.getBookID().equalsIgnoreCase(bookID)) {
+            if (book != null && book.getBookID() != null && book.getBookID().equalsIgnoreCase(normalizedBookID)) {
                 return book;
             }
         }
@@ -134,6 +152,7 @@ public class BookReservation {
         Reservation reservation = new Reservation(generateReservationID(), book, student, getCurrentDate(), "Active");
 
         reservationList.add(reservation);
+        bookDAO.saveToFile(bookList);
 
         return "Reservation successful. " + student.getStudentName() + 
                " has been added to the waiting list for \"" + book.getTitle() + 
@@ -161,6 +180,7 @@ public class BookReservation {
         }
 
         reservation.setStatus("Cancelled");
+        bookDAO.saveToFile(bookList);
 
         return "Reservation cancelled successfully. \n" + student.getStudentName() +
                " has been removed from the waiting list for \"" + book.getTitle() + 
@@ -217,6 +237,8 @@ public class BookReservation {
             reservation.setStatus("Notified");
         }
 
+        bookDAO.saveToFile(bookList);
+
         return "Notification sent to " + nextStudent.getStudentName() + 
                " (" + nextStudent.getStudentID() + 
                ") for book \"" + book.getTitle() + "\".";
@@ -239,6 +261,8 @@ public class BookReservation {
         if (reservation != null) {
             reservation.setStatus("Delayed");
         }
+
+        bookDAO.saveToFile(bookList);
 
         return "Delay notification sent to " + nextStudent.getStudentName() + 
                " (" + nextStudent.getStudentID() + 
@@ -268,6 +292,7 @@ public class BookReservation {
         }
 
         book.getWaitingList().clear();
+        bookDAO.saveToFile(bookList);
 
         return count + " student(s) notified that book \"" + book.getTitle() + "\" has been removed.";
     }
@@ -296,14 +321,16 @@ public class BookReservation {
         this.reservationList = reservationList;
     }
 
-    public void preloadData(){
-        studentList.add(new Student("S001", "Alice"));
-        studentList.add(new Student("S002", "Bob"));
-        studentList.add(new Student("S003", "Charlie"));
+    private void preloadStudents() {
+        studentList.add(new Student("ST001", "Alice"));
+        studentList.add(new Student("ST002", "Bob"));
+        studentList.add(new Student("ST003", "Charlie"));
+    }
 
-        Book b1 = new Book("B001", "The Great Gatsby", "F. Scott Fitzgerald", 2018, 0);
-        Book b2 = new Book("B002", "To Kill a Mockingbird", "Harper Lee", 2015, 0);
-        Book b3 = new Book("B003", "1984", "George Orwell", 2016, 3);
+    private void preloadBooks() {
+        Book b1 = new Book("The Great Gatsby", "F. Scott Fitzgerald", "Novel", 2018, 0);
+        Book b2 = new Book("To Kill a Mockingbird", "Harper Lee", "Novel", 2015, 0);
+        Book b3 = new Book("1984", "George Orwell", "Novel", 2016, 3);
         
         bookList.add(b1);
         bookList.add(b2);
