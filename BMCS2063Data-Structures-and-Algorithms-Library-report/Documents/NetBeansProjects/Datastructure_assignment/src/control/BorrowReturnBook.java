@@ -88,6 +88,7 @@ public class BorrowReturnBook {
             );
 
 
+        probe.setRecordID(null);
         int pos = borrowRecordList.indexOf(probe);
 
         if (pos == -1) {
@@ -97,6 +98,7 @@ public class BorrowReturnBook {
             bookId,
             "EXPIRED"
             );
+            probe.setRecordID(null);
             pos = borrowRecordList.indexOf(probe);
         }
 
