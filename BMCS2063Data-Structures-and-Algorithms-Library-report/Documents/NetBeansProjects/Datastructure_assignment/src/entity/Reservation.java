@@ -1,97 +1,112 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-
 package entity;
-
-/**
- *
- * @author lamzh
- */
 
 import java.io.Serializable;
 import java.util.Objects;
 
 public class Reservation implements Serializable {
     private static final long serialVersionUID = 1L;
-    
+
     private String reservationID;
-    private Book book;
-    private Student student;
+    private String studentID;
+    private String studentName;
+    private String bookID;
+    private String bookTitle;
     private String reservationDate;
     private String status;
-    
-    public Reservation(){
+
+    public Reservation() {
     }
-    
-    public Reservation(String reservationID, Book book, Student student, String reservationDate, String status){
+
+    public Reservation(String reservationID, String studentID, String studentName,
+                       String bookID, String bookTitle, String reservationDate, String status) {
         this.reservationID = reservationID;
-        this.book = book;
-        this.student = student;
+        this.studentID = studentID;
+        this.studentName = studentName;
+        this.bookID = bookID;
+        this.bookTitle = bookTitle;
         this.reservationDate = reservationDate;
         this.status = status;
     }
-    
-    public String getReservationID(){
+
+    public String getReservationID() {
         return reservationID;
     }
     
-    public void setReservationID(String reservationID){
+    
+
+    public void setReservationID(String reservationID) {
         this.reservationID = reservationID;
     }
-    
-    public Book getBook(){
-        return book;
+
+    public String getStudentID() {
+        return studentID;
     }
-    
-    public void setBook(Book book){
-        this.book = book;
+
+    public void setStudentID(String studentID) {
+        this.studentID = studentID;
     }
-    
-    public Student getStudent(){
-        return student;
+
+    public String getStudentName() {
+        return studentName;
     }
-    
-    public void setStudent(Student student){
-        this.student = student;
+
+    public void setStudentName(String studentName) {
+        this.studentName = studentName;
     }
-    
-    public String getReservationDate(){
+
+    public String getBookID() {
+        return bookID;
+    }
+
+    public void setBookID(String bookID) {
+        this.bookID = bookID;
+    }
+
+    public String getBookTitle() {
+        return bookTitle;
+    }
+
+    public void setBookTitle(String bookTitle) {
+        this.bookTitle = bookTitle;
+    }
+
+    public String getReservationDate() {
         return reservationDate;
     }
-    
-    public void setReservationDate(String reservationDate){
+
+    public void setReservationDate(String reservationDate) {
         this.reservationDate = reservationDate;
     }
-    
-    public String getStatus(){
+
+    public String getStatus() {
         return status;
     }
-    
-    public void setStatus(String status){
+
+    public void setStatus(String status) {
         this.status = status;
     }
-    
+
     @Override
-    public int hashCode(){
+    public int hashCode() {
         return Objects.hashCode(this.reservationID);
     }
-    
+
     @Override
-    public boolean equals(Object obj){
+    public boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
         final Reservation other = (Reservation) obj;
         return Objects.equals(this.reservationID, other.reservationID);
     }
-    
+
     @Override
-    public String toString(){
-        return String.format("%s | Book: %s | Student: %s | Date: %s | Status: %s",
+    public String toString() {
+        return String.format("%s | Student: %s (%s) | Book: %s (%s) | Date: %s | Status: %s",
                 reservationID,
-                (book != null ? book.getBookID() : "N/A"),
-                (student != null ? student.getStudentID() : "N/A"),
+                studentName,
+                studentID,
+                bookTitle,
+                bookID,
                 reservationDate,
                 status);
     }

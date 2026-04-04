@@ -34,17 +34,19 @@ public class BorrowReturnBook {
     private ListInterface<BorrowRecord> borrowRecordList = new DoublyLinkedList<>();
     private BookDAO bookDAO = new BookDAO();
     private BorrowRecordDAO borrowRecordDAO = new BorrowRecordDAO();
+    private BookReservation reservationControl;
+   
    
     
-    
     public BorrowReturnBook() {
-            bookList = bookDAO.retrieveFromFile();
-            borrowRecordList = borrowRecordDAO.retrieveFromFile();
-            
-         
-           if(borrowRecordList.isEmpty()){
-                   initializeSampleRecord();
-           }}
+           this.reservationControl = reservationControl;
+    bookList = bookDAO.retrieveFromFile();
+    borrowRecordList = borrowRecordDAO.retrieveFromFile();
+
+    if (borrowRecordList.isEmpty()) {
+        initializeSampleRecord();
+        borrowRecordList = borrowRecordDAO.retrieveFromFile();
+    }}
     
     public Book findBookById(String bookId) {
             if (bookId == null || bookId.trim().isEmpty()) {
@@ -78,29 +80,35 @@ public class BorrowReturnBook {
             }
     
         public boolean returnBook(String studentId, String bookId) {
-            reloadData();
-            if (!isValidStudentId(studentId)) {
-                return false;
+                reloadData();
+
+                if (!isValidStudentId(studentId)) {
+                    return false;
+                }
+
+                BorrowRecord record = findActiveBorrowRecord(studentId, bookId);
+                Book book = findBookById(bookId);
+
+                if (record == null || book == null) {
+                    return false;
+                }
+
+                record.setReturnDate(LocalDate.now().toString());
+                record.setStatus("RETURNED");
+
+                book.setQuantity(book.getQuantity() + 1);
+                book.setIsAvailable(true);
+
+                bookDAO.saveToFile(bookList);
+                borrowRecordDAO.saveToFile(borrowRecordList);
+
+                
+                if (reservationControl != null) {
+                    reservationControl.notifyNextStudent(bookId);
+                }
+
+                return true;
             }
-
-            BorrowRecord record = findActiveBorrowRecord(studentId, bookId);
-            Book book = findBookById(bookId);
-
-            if (record == null || book == null) {
-                return false;
-            }
-
-            record.setReturnDate(LocalDate.now().toString());
-            record.setStatus("RETURNED");
-
-            book.setQuantity(book.getQuantity() + 1);
-            book.setIsAvailable(true);
-
-            bookDAO.saveToFile(bookList);
-            borrowRecordDAO.saveToFile(borrowRecordList);
-
-            return true;
-        }
 
         public BorrowRecord findActiveBorrowRecord(String studentId, String bookId) {
 
@@ -128,7 +136,7 @@ public class BorrowReturnBook {
     }
 
 
-       public int borrowBook(String studentId, String bookId, String studentName) {
+      public int borrowBook(String studentId, String bookId, String studentName) {
 
                 reloadData(); 
 
@@ -142,15 +150,29 @@ public class BorrowReturnBook {
                     return -2; 
                 }
 
-        
+                
                 if (findActiveBorrowRecord(studentId, bookId) != null) {
                     return -3; 
                 }
 
-                if (!checkAvailability(bookId)) {
-                    return -4; 
+                
+                if (reservationControl != null) {
+                    Reservation notified = reservationControl.findNotifiedReservationByStudent(studentId);
+
+                    if (notified != null && notified.getBookID().equalsIgnoreCase(bookId)) {
+                        
+                    } else {
+                        if (!checkAvailability(bookId)) {
+                            return -4; 
+                        }
+                    }
+                } else {
+                    if (!checkAvailability(bookId)) {
+                        return -4;
+                    }
                 }
 
+                
                 book.setQuantity(book.getQuantity() - 1);
                 book.setIsAvailable(book.getQuantity() > 0);
 
@@ -160,8 +182,12 @@ public class BorrowReturnBook {
                 bookDAO.saveToFile(bookList);
                 borrowRecordDAO.saveToFile(borrowRecordList);
 
-                return 1; 
+                
+                if (reservationControl != null) {
+                    reservationControl.markReservationAsEnded(studentId, bookId);
+                }
 
+                return 1; 
             }
 
       
@@ -440,7 +466,7 @@ public class BorrowReturnBook {
     
     
 
-    private BookReservation reservationControl;
+   
 
     public BorrowReturnBook(BookReservation reservationControl) {
         this.reservationControl = reservationControl;
@@ -450,21 +476,16 @@ public class BorrowReturnBook {
 
     public boolean addToWaitingList(String studentId, String bookId,String studentName) {
         if (reservationControl == null) {
-            MessageUI.displayMessage("Reservation module is not available.");
-            return false;
-        }
-<<<<<<< Updated upstream
-        else{
-        reservationControl.reserveBook(studentId , bookId, studentName);
-        }
-   return true;
-=======
+        MessageUI.displayMessage("Reservation module is not available.");
+        return false;
+    }
 
-        String result = reservationControl.reserveBook(studentId, bookId, studentName);
-        MessageUI.displayMessage(result);
+    String result = reservationControl.reserveBook(studentId, bookId, studentName);
+    MessageUI.displayMessage(result);
 
-        return result.toLowerCase().contains("successful");
->>>>>>> Stashed changes
+    return result != null && result.toLowerCase().contains("successful");
+
+        
     }
     
     
@@ -473,7 +494,7 @@ public class BorrowReturnBook {
     borrowRecordList = borrowRecordDAO.retrieveFromFile();
 }
     
-
+    
     // Author: lamzh
     public void setReservationControl(BookReservation reservationControl) {
         this.reservationControl = reservationControl;
@@ -581,6 +602,8 @@ public class BorrowReturnBook {
 
     return output.toString();
 }
+    
+    
 
 
 }

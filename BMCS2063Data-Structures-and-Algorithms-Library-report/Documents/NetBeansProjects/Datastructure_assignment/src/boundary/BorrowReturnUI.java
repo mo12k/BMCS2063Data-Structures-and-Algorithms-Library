@@ -1,5 +1,6 @@
 package boundary;
 
+import control.BookReservation;
 import control.BorrowReturnBook;
 import entity.Book;
 import java.util.Scanner;
@@ -8,7 +9,9 @@ public class BorrowReturnUI {
 
     private Scanner scanner = new Scanner(System.in);
     private BorrowReturnBook control = new BorrowReturnBook();
-
+    public void setReservationControl(BookReservation reservationControl) {
+    control.setReservationControl(reservationControl);
+}
     public void startBorrowReturnModule() {
         int choice;
 

@@ -58,8 +58,8 @@ public class ReportManagement {
 
                 output.append(String.format("%-12s %-12s %-10s %-15s %-12s%n",
                         r.getReservationID(),
-                        r.getStudent() != null ? r.getStudent().getStudentID() : "N/A",
-                        r.getBook() != null ? r.getBook().getBookID() : "N/A",
+                        r.getStudentID() != null ? r.getStudentID() : "N/A",
+                        r.getBookID() != null ? r.getBookID() : "N/A",
                         r.getReservationDate(),
                         r.getStatus()));
             }

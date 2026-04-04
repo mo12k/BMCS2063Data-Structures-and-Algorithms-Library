@@ -11,18 +11,22 @@ package boundary;
  */
 
 import control.BookReservation;
+import control.BorrowReturnBook;
 import java.util.Scanner;
 
 public class BookReservationUI {
 
     private BookReservation reservationControl;
+    private BorrowReturnBook borrowReturnControl;
     private Scanner scanner;
 
     public BookReservationUI(BookReservation reservationControl) {
         this.reservationControl = reservationControl;
         this.scanner = new Scanner(System.in);
     }
-
+    public void setReservationControl(BookReservation reservationControl) {
+    borrowReturnControl.setReservationControl(reservationControl);
+}
     public void start() {
         int choice;
 
@@ -60,22 +64,34 @@ public class BookReservationUI {
         return scanner.nextInt();
     }
 
-    private void reserveBook(String studentID,String bookID,String studentName) {
-        
-        if(studentID ==null ||bookID ==null||studentName ==null){
+    private void reserveBook(String studentID, String bookID, String studentName) {
+
+    if (studentID == null || bookID == null || studentName == null) {
         scanner.nextLine();
+
         System.out.print("Enter Student ID: ");
         studentID = scanner.nextLine();
+
+        String foundName = reservationControl.findStudentNameFromBorrowRecord(studentID);
+
+        if (foundName != null && !foundName.trim().isEmpty()) {
+            studentName = foundName;
+            System.out.println("Student Name found: " + studentName);
+        } else {
+            System.out.print("Enter Student Name: ");
+            studentName = scanner.nextLine();
+        }
 
         System.out.print("Enter Book ID: ");
         bookID = scanner.nextLine();
 
-        String result = reservationControl.reserveBook(studentID, bookID,studentName);
-        System.out.println(result);}
-        else {
-        String result2 = reservationControl.reserveBook(studentID, bookID,studentName);
-        System.out.println(result2);}
+        String result = reservationControl.reserveBook(studentID, bookID, studentName);
+        System.out.println(result);
+    } else {
+        String result2 = reservationControl.reserveBook(studentID, bookID, studentName);
+        System.out.println(result2);
     }
+}
 
     private void cancelReservation() {
         scanner.nextLine();
