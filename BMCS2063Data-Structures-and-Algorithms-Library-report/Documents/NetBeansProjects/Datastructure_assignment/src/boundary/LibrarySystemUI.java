@@ -1,6 +1,7 @@
 package boundary;
 
 import control.BookMaintenance;
+import control.BookReservation;
 import java.util.Scanner;
 import utility.UITools;
 
@@ -9,10 +10,10 @@ public class LibrarySystemUI {
     private Scanner scanner = new Scanner(System.in);
 
     private BookMaintenance bookMaintenance = new BookMaintenance();
+    private BookReservation reservationControl =new BookReservation();
+    private BookReservationUI bookReservationUI = new BookReservationUI(reservationControl);
 
-    private BookReservationUI bookReservationUI = new BookReservationUI();
-
-    private BorrowReturnUI borrowReturnUI = new BorrowReturnUI();
+    private BorrowReturnUI borrowReturnUI = new BorrowReturnUI(reservationControl);
     private FineManagementUI fineManagementUI = new FineManagementUI();
     private ReportUI reportUI = new ReportUI();
 
