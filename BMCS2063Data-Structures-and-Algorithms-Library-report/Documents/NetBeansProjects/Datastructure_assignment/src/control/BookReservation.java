@@ -30,18 +30,15 @@ public class BookReservation {
         bookList = new DoublyLinkedList<>();
         studentList = new DoublyLinkedList<>();
         reservationList = new DoublyLinkedList<>();
-
-        preloadStudents();
-
         bookList = bookDAO.retrieveFromFile();
+        
         if (bookList.isEmpty()) {
-            preloadBooks();
             bookDAO.saveToFile(bookList);
         }
     }
 
     private String generateReservationID() {
-        return String.format("R%03d", reservationCount++);
+        return String.format("RS%03d", reservationCount++);
     }
 
     private Book findBookById(String bookID) {
@@ -130,6 +127,7 @@ public class BookReservation {
     
     public String reserveBook(String studentID, String bookID) {
         Student student = findStudentById(studentID);
+        System.out.println(getStudentList()+"It is empty");
         if (student == null) {
             return "Reservation failed. This student does not exist.";
         }
@@ -320,21 +318,11 @@ public class BookReservation {
     public void setReservationList(ListInterface<Reservation> reservationList) {
         this.reservationList = reservationList;
     }
-
-    private void preloadStudents() {
-        studentList.add(new Student("ST001", "Alice"));
-        studentList.add(new Student("ST002", "Bob"));
-        studentList.add(new Student("ST003", "Charlie"));
+    
+    public ListInterface<Student> getAllBooks() {
+            return (studentList);
     }
 
-    private void preloadBooks() {
-        Book b1 = new Book("The Great Gatsby", "F. Scott Fitzgerald", "Novel", 2018, 0);
-        Book b2 = new Book("To Kill a Mockingbird", "Harper Lee", "Novel", 2015, 0);
-        Book b3 = new Book("1984", "George Orwell", "Novel", 2016, 3);
-        
-        bookList.add(b1);
-        bookList.add(b2);
-        bookList.add(b3);
-    }
+    
 }
 

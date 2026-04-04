@@ -443,11 +443,9 @@ public class BorrowReturnBook {
         borrowRecordList = borrowRecordDAO.retrieveFromFile();
     }
 
+    //
     public boolean addToWaitingList(String studentId, String bookId, String studentName) {
-        if (reservationControl == null) {
-            System.out.println("Reservation module is not available.");
-            return false;
-        }
+       
 
         String result = reservationControl.reserveBook(studentId, bookId);
         System.out.println(result);
